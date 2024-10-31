@@ -37,14 +37,13 @@ Este projeto é de propriedade do SENAI "Antonio Devisate" e é desenvolvido por
    ```bash
    cd appfic
    
-Instale as dependências:
-
+3. Instale as dependências:
    ```bash
-npm install
-Inicie o projeto:
-
+   npm install
+   
+4. Inicie o projeto:
    ```bash
-npm start
+   npm start
 
 
 Contribuições
