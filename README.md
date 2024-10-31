@@ -32,21 +32,21 @@ Este projeto é de propriedade do SENAI "Antonio Devisate" e é desenvolvido por
 1. Clone o repositório:
    ```bash
    git clone https://github.com/seu-usuario/appfic.git
-Navegue até o diretório do projeto:
-
+   
+2. Navegue até o diretório do projeto:
    ```bash
-Copiar código
-cd appfic
+   cd appfic
+   
 Instale as dependências:
 
-```bash
-Copiar código
+   ```bash
 npm install
 Inicie o projeto:
 
-```bash
-Copiar código
+   ```bash
 npm start
+
+
 Contribuições
 Contribuições são bem-vindas! Sinta-se à vontade para enviar pull requests ou abrir issues.
 
