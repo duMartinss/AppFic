@@ -18,10 +18,10 @@ Este projeto é o Trabalho de Conclusão de Curso (TCC) do curso Técnico em Des
 
 ## Equipe de Desenvolvimento
 
-- **Eduardo Esteves Martins** (Desenvolvedor)
-- **Nathalia Cazonato** (Desenvolvedora)
-- **Manuela Magalhães** (Desenvolvedora)
-- **Maria Fernanda de Lima** (Desenvolvedora)
+- **Eduardo Esteves Martins** (Scrum Master e Operacional Desenvolvedor)
+- **Nathalia Cazonato** (Operacional Designer)
+- **Manuela Magalhães** (Coordenadora Operacional e Operacional Designer)
+- **Maria Fernanda de Lima** (Operacional Tester e Operacional Desginer)
 
 ## Licença
 
@@ -52,5 +52,5 @@ Contribuições são bem-vindas! Sinta-se à vontade para enviar pull requests o
 ## Contato
 Para mais informações, entre em contato com:
 
-## Eduardo Esteves Martins: seu-email@example.com
+## Eduardo Esteves Martins: duduestevesmartins@gmail.com
 
