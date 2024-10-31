@@ -44,3 +44,11 @@
 4. &nbsp;&nbsp;&nbsp;&nbsp;Inicie o projeto:
    ```bash
    npm start
+
+## Contribuições
+Contribuições são bem-vindas! Sinta-se à vontade para enviar pull requests ou abrir issues.
+
+## Contato
+Para mais informações, entre em contato com:
+
+- Eduardo Esteves Martins: duduestevesmartins@gmail.com
