@@ -46,11 +46,11 @@ Este projeto é de propriedade do SENAI "Antonio Devisate" e é desenvolvido por
    npm start
 
 
-Contribuições
+## Contribuições
 Contribuições são bem-vindas! Sinta-se à vontade para enviar pull requests ou abrir issues.
 
-Contato
+## Contato
 Para mais informações, entre em contato com:
 
-Eduardo Esteves Martins: seu-email@example.com
-Agradecemos pelo seu interesse no APPFIC!
+## Eduardo Esteves Martins: seu-email@example.com
+### Agradecemos pelo seu interesse no APPFIC!
