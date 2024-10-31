@@ -34,7 +34,7 @@ Este projeto é de propriedade do SENAI "Antonio Devisate" e é desenvolvido por
    git clone https://github.com/seu-usuario/appfic.git
 Navegue até o diretório do projeto:
 
-```bash
+   ```bash
 Copiar código
 cd appfic
 Instale as dependências:
