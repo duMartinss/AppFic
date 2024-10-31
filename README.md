@@ -1,4 +1,4 @@
-&nbsp;&nbsp;&nbsp;&nbsp; # APPFIC - Cursos Livres SENAI
+# APPFIC - Cursos Livres SENAI
 
 ## Descrição
 
