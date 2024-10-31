@@ -53,4 +53,4 @@ Contribuições são bem-vindas! Sinta-se à vontade para enviar pull requests o
 Para mais informações, entre em contato com:
 
 ## Eduardo Esteves Martins: seu-email@example.com
-### Agradecemos pelo seu interesse no APPFIC!
+
