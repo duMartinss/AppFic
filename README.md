@@ -32,3 +32,15 @@
 1. &nbsp;&nbsp;&nbsp;&nbsp;Clone o repositório:
    ```bash
    git clone https://github.com/seu-usuario/appfic.git
+
+2. &nbsp;&nbsp;&nbsp;&nbsp;Navegue até o diretório do projeto:
+   ```bash
+   cd appfic
+   
+3. &nbsp;&nbsp;&nbsp;&nbsp;Instale as dependências:
+   ```bash
+   npm install
+
+4. &nbsp;&nbsp;&nbsp;&nbsp;Inicie o projeto:
+   ```bash
+   npm start
