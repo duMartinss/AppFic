@@ -19,7 +19,7 @@
 ## Equipe de Desenvolvimento
 
 &nbsp;&nbsp;&nbsp;&nbsp;- **Eduardo Esteves Martins** (Scrum Master e Operacional Desenvolvedor)  
-&nbsp;&nbsp;&nbsp;&nbsp;- **Nathalia Cazonato** (Operacional Designer)  
+&nbsp;&nbsp;&nbsp;&nbsp;- **Nathalia Cazonato** (Operacional Tester)  
 &nbsp;&nbsp;&nbsp;&nbsp;- **Manuela Magalhães** (Coordenadora Operacional e Operacional Designer)  
 &nbsp;&nbsp;&nbsp;&nbsp;- **Maria Fernanda de Lima** (Operacional Tester e Operacional Designer)  
 
