@@ -164,17 +164,27 @@ app.post('/api/login', async (req, res) => {
 // Rota para obter informações do usuário por ID
 app.get('/api/usuario/:id', async (req, res) => {
   const { id } = req.params;
-
+  console.log('ID recebido:', id);
+  
   try {
     const connection = await mysql.createConnection(dbConfig);
-    const [results] = await connection.execute('SELECT nome_user, email_user, nascimento_user, telefone_user, cidade_user, estado_user FROM usuario WHERE id_user = ?', [id]);
-
-    if (results.length === 0) return res.status(404).json({ message: 'Usuário não encontrado.' });
-
-    res.status(200).json(results[0]);
+    
+    // Especifique explicitamente todas as colunas, incluindo imagem_user
+    const [rows] = await connection.execute(
+      'SELECT id_user, nome_user, email_user, nascimento_user, telefone_user, cidade_user, estado_user, imagem_user FROM usuario WHERE id_user = ?',
+      [id]
+    );
+    
+    console.log('Dados do usuário:', rows[0]);
+    
+    if (rows.length > 0) {
+      res.json(rows[0]);
+    } else {
+      res.status(404).json({ message: 'Usuário não encontrado' });
+    }
   } catch (error) {
-    console.error('Erro ao buscar informações do usuário:', error.message);
-    return res.status(500).json({ message: 'Erro ao buscar informações do usuário.' });
+    console.error('Erro ao buscar usuário:', error);
+    res.status(500).json({ message: 'Erro ao buscar usuário' });
   }
 });
 
@@ -508,6 +518,9 @@ app.put('/api/usuario/:id/imagem', async (req, res) => {
   const { id } = req.params;
   const { imagem_user } = req.body;
 
+  console.log('ID recebido:', id);
+  console.log('Imagem recebida:', imagem_user);
+
   try {
     const connection = await mysql.createConnection(dbConfig);
     
@@ -522,6 +535,8 @@ app.put('/api/usuario/:id/imagem', async (req, res) => {
       'SELECT * FROM usuario WHERE id_user = ?',
       [id]
     );
+
+    console.log('Dados após atualização:', rows);
 
     await connection.end();
 

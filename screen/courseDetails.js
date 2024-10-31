@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView, ActivityIndicator, Alert, Modal, TextInput } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import { colors } from "../utils/colors";
 import { fonts } from "../utils/fonts";
-import { useNavigation, useRoute } from '@react-navigation/native'; // Hook de navegação
+import { useNavigation, useRoute } from '@react-navigation/native'; 
 
-function CourseHeader({ course }) {
+function CourseHeader({ course, onEditPress }) {
   const navigation = useNavigation();
 
-  // Função para formatar a data
   const formatDate = (dateString) => {
     if (!dateString) return '';
     const date = new Date(dateString);
@@ -20,10 +19,8 @@ function CourseHeader({ course }) {
     });
   };
 
-  // Função para formatar as horas
   const formatHours = (hoursString) => {
     if (!hoursString) return '';
-    // Pega apenas os números antes do primeiro ':'
     return hoursString.split(':')[0];
   };
 
@@ -48,6 +45,9 @@ function CourseHeader({ course }) {
           </View>
         </View>
       </View>
+      <TouchableOpacity onPress={onEditPress} style={styles.editButton}>
+        <Ionicons name="pencil-outline" size={25} color="black" />
+      </TouchableOpacity>
     </View>
   );
 }
@@ -55,16 +55,15 @@ function CourseHeader({ course }) {
 export default function CourseScreen() {
   const navigation = useNavigation();
   const route = useRoute();
-  
-  console.log('Route params:', route.params);
-  
   const { courseName } = route.params;
-  
+
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isProgramacaoOpen, setProgramacaoOpen] = useState(false);
   const [isRequisitosOpen, setRequisitosOpen] = useState(false);
   const [isPerfilOpen, setPerfilOpen] = useState(false);
+  const [isEditModalVisible, setEditModalVisible] = useState(false);
+  const [editedCourse, setEditedCourse] = useState({});
 
   useEffect(() => {
     const fetchCourseDetails = async () => {
@@ -74,36 +73,14 @@ export default function CourseScreen() {
       }
 
       try {
-        console.log('Iniciando busca do curso');
-        console.log('URL:', 'http://10.0.2.2:3000/api/cursos/buscar');
-        console.log('Dados:', { nome: courseName });
-
-        const response = await axios({
-          method: 'post',
-          url: 'http://10.0.2.2:3000/api/cursos/buscar',
-          data: { nome: courseName },
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-
-        console.log('Resposta recebida:', response.data);
-        
+        const response = await axios.post('http://10.0.2.2:3000/api/cursos/buscar', { nome: courseName });
         if (response.data) {
           setCourse(response.data);
+          setEditedCourse(response.data);
         }
       } catch (error) {
-        console.error('Erro na requisição:', {
-          message: error.message,
-          status: error.response?.status,
-          data: error.response?.data,
-          config: error.config
-        });
-        
-        Alert.alert(
-          'Erro',
-          'Não foi possível carregar os detalhes do curso.'
-        );
+        console.error('Erro na requisição:', error);
+        Alert.alert('Erro', 'Não foi possível carregar os detalhes do curso.');
       } finally {
         setLoading(false);
       }
@@ -111,6 +88,20 @@ export default function CourseScreen() {
 
     fetchCourseDetails();
   }, [courseName]);
+
+  const handleSaveEdits = async () => {
+    try {
+      const response = await axios.put(`http://10.0.2.2:3000/api/cursos/editar/${course.id}`, editedCourse);
+      if (response.data) {
+        setCourse(response.data);
+        setEditModalVisible(false);
+        Alert.alert('Sucesso', 'Curso atualizado com sucesso!');
+      }
+    } catch (error) {
+      console.error('Erro ao salvar as edições:', error);
+      Alert.alert('Erro', 'Não foi possível salvar as alterações.');
+    }
+  };
 
   if (loading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
@@ -124,211 +115,256 @@ export default function CourseScreen() {
     );
   }
 
-  // Função atualizada para verificar o tópico do curso
   const temTrilhaDisponivel = (topicoCurso) => {
-    const topicosComTrilha = [
-      'Tecnologia',
-      'Mecatrônica',
-      'Automotiva',
-      'Fabricação Mecânica'
-    ];
-    
-    // Adiciona um log para debug
-    console.log('Tópico do curso:', topicoCurso);
-    console.log('Tópicos disponíveis:', topicosComTrilha);
-    console.log('Tem trilha?', topicosComTrilha.includes(topicoCurso));
-    
+    const topicosComTrilha = ['Tecnologia', 'Mecatrônica', 'Automotiva', 'Fabricação Mecânica'];
     return topicosComTrilha.includes(topicoCurso);
   };
 
   return (
     <View style={styles.container}>
-      <CourseHeader course={course} />
+      <CourseHeader course={course} onEditPress={() => setEditModalVisible(true)} />
       <ScrollView contentContainerStyle={styles.scrollViewContent} showsVerticalScrollIndicator={false}>
         <Text style={styles.courseDescription}>{course.descricao}</Text>
-
+        {/* Conteúdo Expandível */}
+        {/* Programação */}
         <TouchableOpacity style={styles.sectionButton} onPress={() => setProgramacaoOpen(!isProgramacaoOpen)}>
           <Text style={styles.sectionText}>Programação</Text>
           <Ionicons name={isProgramacaoOpen ? 'chevron-down-outline' : 'chevron-forward-outline'} size={20} color="black" />
         </TouchableOpacity>
-        {isProgramacaoOpen && (
-          <View style={styles.content}>
-            <Text style={styles.content2}>{course.programacao}</Text>
-          </View>
-        )}
-
+        {isProgramacaoOpen && <View style={styles.content}><Text style={styles.content2}>{course.programacao}</Text></View>}
+        
+        {/* Requisitos */}
         <TouchableOpacity style={styles.sectionButton} onPress={() => setRequisitosOpen(!isRequisitosOpen)}>
           <Text style={styles.sectionText}>Requisitos</Text>
           <Ionicons name={isRequisitosOpen ? 'chevron-down-outline' : 'chevron-forward-outline'} size={20} color="black" />
         </TouchableOpacity>
-        {isRequisitosOpen && (
-          <View style={styles.content}>
-            <Text style={styles.content2}>{course.requisitos}</Text>
-          </View>
-        )}
-
+        {isRequisitosOpen && <View style={styles.content}><Text style={styles.content2}>{course.requisitos}</Text></View>}
+        
+        {/* Perfil Profissional */}
         <TouchableOpacity style={styles.sectionButton} onPress={() => setPerfilOpen(!isPerfilOpen)}>
           <Text style={styles.sectionText}>Perfil Profissional</Text>
           <Ionicons name={isPerfilOpen ? 'chevron-down-outline' : 'chevron-forward-outline'} size={20} color="black" />
         </TouchableOpacity>
-        {isPerfilOpen && (
-          <View style={styles.content}>
-            <Text style={styles.content2}>{course.perfilProfissional}</Text>
-          </View>
-        )}
+        {isPerfilOpen && <View style={styles.content}><Text style={styles.content2}>{course.perfilProfissional}</Text></View>}
 
-        {/* Verifica o tópico do curso */}
+        {/* Saiba Mais */}
         {temTrilhaDisponivel(course.topico_curso) && (
-          <TouchableOpacity 
-            style={styles.saibaMaisButton}
-            onPress={() => navigation.navigate('SAIBAMAIS', { 
-              courseId: course.id,
-              courseCategory: course.topico_curso
-            })}
-          >
+          <TouchableOpacity style={styles.saibaMaisButton} onPress={() => navigation.navigate('SAIBAMAIS', { courseId: course.id, courseCategory: course.topico_curso })}>
             <Text style={styles.saibaMaisText}>Saiba Mais</Text>
           </TouchableOpacity>
         )}
       </ScrollView>
+
+      {/* Modal de Edição */}
+      <Modal visible={isEditModalVisible} animationType="slide" transparent={true}>
+        <View style={styles.modalContainer}>
+          <Text style={styles.modalTitle}>Editar Curso</Text>
+          <TextInput style={styles.input} value={editedCourse.nome} onChangeText={(text) => setEditedCourse({ ...editedCourse, nome: text })} placeholder="Nome do Curso" />
+          <TextInput style={styles.input} value={editedCourse.dataInicio} onChangeText={(text) => setEditedCourse({ ...editedCourse, dataInicio: text })} placeholder="Data de Início" />
+          <TextInput style={styles.input} value={editedCourse.dataFim} onChangeText={(text) => setEditedCourse({ ...editedCourse, dataFim: text })} placeholder="Data de Fim" />
+          <TextInput style={styles.input} value={editedCourse.descricao} onChangeText={(text) => setEditedCourse({ ...editedCourse, descricao: text })} placeholder="Descrição" />
+          <TextInput style={styles.input} value={editedCourse.programacao} onChangeText={(text) => setEditedCourse({ ...editedCourse, programacao: text })} placeholder="Programação" />
+          <TextInput style={styles.input} value={editedCourse.requisitos} onChangeText={(text) => setEditedCourse({ ...editedCourse, requisitos: text })} placeholder="Requisitos" />
+          <TouchableOpacity style={styles.saveButton} onPress={handleSaveEdits}>
+            <Text style={styles.saveButtonText}>Salvar</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.cancelButton} onPress={() => setEditModalVisible(false)}>
+            <Text style={styles.cancelButtonText}>Cancelar</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: 'white',
-      paddingHorizontal: 20,
-      paddingTop: 90,
-    },
-    headerContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      padding: 10,
-      backgroundColor: '#fff',
-      borderRadius: 10,
-      marginBottom: 20,
-      shadowColor: '#000',
-      shadowOpacity: 0.1,
-      shadowOffset: { width: 0, height: 2 },
-      shadowRadius: 5,
-      elevation: 3,
-    },
-    courseImage: {
-      width: 135,
-      height: 100,
-      borderRadius: 10,
-    },
-    infoContainer: {
-      flex: 1,
-      marginLeft: 20,
-      fontFamily: fonts.Bold
-    },
-    courseTitle: {
-      fontSize: 18,
-      color: '#000',
-      marginBottom: 10,
-      fontFamily: fonts.Bold,
-    },
-    datesContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      marginBottom: 10,
-      
-    },
-    dateItem: {
-      marginRight: 15,
-      alignItems: 'left',
-    },
-    dateLabel: {
-      fontSize: 12,
-      color: '#888',
-      fontFamily: fonts.Bold,
-    },
-    dateValue: {
-      fontSize: 12,
-      fontFamily: fonts.Bold,
-      color: '#000',
-    },
-    detailsContainer: {
-      flexDirection: 'row',
-      justifyContent: 'center',
-      alignItems: 'center',
-      width: '100%',
-      marginTop: 5,
-    },
-    hours: {
-      fontSize: 12,
-      color: '#000',
-      fontFamily: fonts.Bold,
-      marginTop: 5,
-    },
-    paid: {
-      fontSize: 12,
-      color: 'red',
-      fontFamily: fonts.Bold,
-      marginTop: 5,
-    },
-    courseDescription: {
-      fontSize: 14,
-      color: '#000',
-      marginBottom: 20,
-      fontFamily: fonts.SemiBold,
-    },
-    sectionButton: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      padding: 15,
-      borderWidth: 1,
-      borderColor: '#000',
-      borderRadius: 10,
-      marginVertical: 5,
-  
-    },
-    sectionText: {
-      fontSize: 16,
-      fontFamily: fonts.Bold,
-      color: 'red',
-    },
-    content: {
-      padding: 15,
-      backgroundColor: '#f9f9f9',
-      borderWidth: 1,
-      borderColor: '#ddd',
-      borderRadius: 10,
-      marginBottom: 10,
-      fontFamily: fonts.Bold
-    },
-    content2: {
-      fontFamily: fonts.Medium
-    },
-    scrollViewContent: {
-      paddingBottom: 20,
-    },
-    backButton: {
-    position: 'absolute',
-    top: -65, 
-    left: -20,
-    zIndex: 11, // Prioridade do botão sobre o conteúdo
+  container: {
+    flex: 1,
+    backgroundColor: 'white',
+    paddingHorizontal: 20,
+    paddingTop: 90,
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 5,
+    elevation: 3,
+  },
+  courseImage: {
+    width: 135,
+    height: 100,
+    borderRadius: 10,
+  },
+  infoContainer: {
+    flex: 1,
+    marginLeft: 20,
+    fontFamily: fonts.Bold
+  },
+  courseTitle: {
+    fontSize: 18,
+    color: '#000',
+    marginBottom: 10,
+    fontFamily: fonts.Bold,
+  },
+  datesContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+    
+  },
+  dateItem: {
+    marginRight: 15,
+    alignItems: 'left',
+  },
+  dateLabel: {
+    fontSize: 12,
+    color: '#888',
+    fontFamily: fonts.Bold,
+  },
+  dateValue: {
+    fontSize: 12,
+    fontFamily: fonts.Bold,
+    color: '#000',
+  },
+  detailsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    marginTop: 5,
+  },
+  hours: {
+    fontSize: 12,
+    color: '#000',
+    fontFamily: fonts.Bold,
+    marginTop: 5,
+  },
+  paid: {
+    fontSize: 12,
+    color: 'red',
+    fontFamily: fonts.Bold,
+    marginTop: 5,
+  },
+  courseDescription: {
+    fontSize: 14,
+    color: '#000',
+    marginBottom: 20,
+    fontFamily: fonts.SemiBold,
+  },
+  sectionButton: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 15,
+    borderWidth: 1,
+    borderColor: '#000',
+    borderRadius: 10,
+    marginVertical: 5,
+
+  },
+  sectionText: {
+    fontSize: 16,
+    fontFamily: fonts.Bold,
+    color: 'red',
+  },
+  content: {
+    padding: 15,
+    backgroundColor: '#f9f9f9',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 10,
+    marginBottom: 10,
+    fontFamily: fonts.Bold
+  },
+  content2: {
+    fontFamily: fonts.Medium
+  },
+  scrollViewContent: {
+    paddingBottom: 20,
+  },
+  backButton: {
+  position: 'absolute',
+  top: -65, 
+  left: -20,
+  zIndex: 11, // Prioridade do botão sobre o conteúdo
+  padding: 20,
+  },
+  highlight: {
+    color: colors.red,
+    fontWeight: fonts.Bold,
+  },
+  saibaMaisButton: {
+    backgroundColor: '#AD0000',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 20,
+    marginBottom: 30,
+  },
+  saibaMaisText: {
+    color: '#FFF',
+    fontSize: 16,
+    fontFamily: fonts.Bold,
+    textTransform: 'uppercase',
+  },
+
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     padding: 20,
-    },
-    highlight: {
-      color: colors.red,
-      fontWeight: fonts.Bold,
-    },
-    saibaMaisButton: {
-      backgroundColor: '#AD0000',
-      padding: 15,
-      borderRadius: 10,
-      alignItems: 'center',
-      marginTop: 20,
-      marginBottom: 30,
-    },
-    saibaMaisText: {
-      color: '#FFF',
-      fontSize: 16,
-      fontFamily: fonts.Bold,
-      textTransform: 'uppercase',
-    },
-  });
+  },
+  modalContent: {
+    width: '100%',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: 'black',
+    marginBottom: 20,
+  },
+  input: {
+    backgroundColor: '#f1f1f1',
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 15,
+    fontSize: 16,
+    color: 'black',
+  },
+  saveButton: {
+    backgroundColor: '#4CAF50',
+    paddingVertical: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  saveButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  cancelButton: {
+    backgroundColor: 'red',
+    paddingVertical: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  cancelButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+});
+

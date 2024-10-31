@@ -31,6 +31,16 @@ const SignupScreen = () => {
     const [telefone, setTelefone] = useState('');
     const [cep, setCep] = useState('');
 
+    // Adicione o estado de erros no início do componente
+    const [errors, setErrors] = useState({
+    nome: false,
+    email: false,
+    senha: false,
+    dataNascimento: false,
+    telefone: false,
+    cep: false
+});
+
     // Adicione esses estados no início do componente
     const [passwordStrength, setPasswordStrength] = useState(0);
     const [isPasswordFocused, setIsPasswordFocused] = useState(false);
@@ -44,6 +54,8 @@ const SignupScreen = () => {
     };
 
     const handleSignup = async () => {
+
+        
         // Verificação da força da senha
         if (passwordStrength <= 25) {
             Alert.alert(
