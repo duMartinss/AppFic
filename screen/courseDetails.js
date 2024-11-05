@@ -45,9 +45,6 @@ function CourseHeader({ course, onEditPress }) {
           </View>
         </View>
       </View>
-      <TouchableOpacity onPress={onEditPress} style={styles.editButton}>
-        <Ionicons name="pencil-outline" size={25} color="black" />
-      </TouchableOpacity>
     </View>
   );
 }
@@ -154,25 +151,6 @@ export default function CourseScreen() {
           </TouchableOpacity>
         )}
       </ScrollView>
-
-      {/* Modal de Edição */}
-      <Modal visible={isEditModalVisible} animationType="slide" transparent={true}>
-        <View style={styles.modalContainer}>
-          <Text style={styles.modalTitle}>Editar Curso</Text>
-          <TextInput style={styles.input} value={editedCourse.nome} onChangeText={(text) => setEditedCourse({ ...editedCourse, nome: text })} placeholder="Nome do Curso" />
-          <TextInput style={styles.input} value={editedCourse.dataInicio} onChangeText={(text) => setEditedCourse({ ...editedCourse, dataInicio: text })} placeholder="Data de Início" />
-          <TextInput style={styles.input} value={editedCourse.dataFim} onChangeText={(text) => setEditedCourse({ ...editedCourse, dataFim: text })} placeholder="Data de Fim" />
-          <TextInput style={styles.input} value={editedCourse.descricao} onChangeText={(text) => setEditedCourse({ ...editedCourse, descricao: text })} placeholder="Descrição" />
-          <TextInput style={styles.input} value={editedCourse.programacao} onChangeText={(text) => setEditedCourse({ ...editedCourse, programacao: text })} placeholder="Programação" />
-          <TextInput style={styles.input} value={editedCourse.requisitos} onChangeText={(text) => setEditedCourse({ ...editedCourse, requisitos: text })} placeholder="Requisitos" />
-          <TouchableOpacity style={styles.saveButton} onPress={handleSaveEdits}>
-            <Text style={styles.saveButtonText}>Salvar</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.cancelButton} onPress={() => setEditModalVisible(false)}>
-            <Text style={styles.cancelButtonText}>Cancelar</Text>
-          </TouchableOpacity>
-        </View>
-      </Modal>
     </View>
   );
 }

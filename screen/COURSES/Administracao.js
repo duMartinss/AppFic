@@ -1,18 +1,80 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, StatusBar, Image, TouchableOpacity } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons'; // Importa o Ionicons
-import { useNavigation } from '@react-navigation/native'; // Hook de navegação
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, StatusBar, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { colors } from "../../utils/colors";
+import { fonts } from "../../utils/fonts";
 import img1 from "../../assets/senai.png";
+import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
 
 const App = () => {
-  const navigation = useNavigation(); // Hook de navegação
+  const navigation = useNavigation();
+  const [cursos, setCursos] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleCoursePress = (courseName) => {
-    console.log('Curso selecionado:', courseName);
+  useEffect(() => {
+    const fetchCursos = async () => {
+      try {
+        console.log('Iniciando busca de cursos...');
+        const response = await axios.get('http://10.0.2.2:3000/api/cursos/topico/Administração e Gestão');
+        console.log('Dados recebidos:', JSON.stringify(response.data, null, 2));
+        
+        if (response.data && response.data.length > 0) {
+          console.log('Primeiro curso:', {
+            nome: response.data[0].nome,
+            descricao: response.data[0].descricao
+          });
+        }
+        
+        setCursos(response.data);
+      } catch (error) {
+        console.error('Erro na requisição:', error);
+        console.error('Detalhes do erro:', error.response?.data);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCursos();
+  }, []);
+
+  const handleCoursePress = (course) => {
     navigation.navigate('COURSEDETAILS', { 
-      courseName: courseName
+      courseName: course.nome,
+      course: {
+        id: course.id,
+        nome: course.nome,
+        descricao: course.descricao,
+        duracao: course.duracao,
+        dataInicio: course.dataInicio,
+        dataFim: course.dataFim,
+        preco: course.preco,
+        requisitos: course.requisitos,
+        programacao: course.programacao,
+        perfilProfissional: course.perfilProfissional,
+        topico: course.topico_curso,
+        imagem: course.imagem,
+        status: course.status
+      }
     });
   };
+
+  const truncateDescription = (description) => {
+    if (!description) return 'Descrição não disponível';
+    const words = description.split(" ");
+    if (words.length > 20) {
+      return words.slice(0, 20).join(" ") + "...";
+    }
+    return description;
+  };
+
+  if (loading) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -34,41 +96,16 @@ const App = () => {
           </Text>
           
           {/* Lista de Cursos */}
-          <TouchableOpacity style={styles.courseItem} onPress={() => handleCoursePress('Alinhamento Estratégico Aplicado à Gestão')}>
-            <View style={styles.sideBar3}></View> 
-            <Image source={img1} style={styles.courseImage} />
-            <View style={styles.courseTextContainer}>
-              <Text style={styles.courseTitle}>Alinhamento Estratégico Aplicado à Gestão</Text>
-              <Text style={styles.courseSubtitle}>O curso de Aperfeiçoamento Profissional de Alinhamento Estratégico Aplicado à Gestão tem por objetivo...</Text>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.courseItem} onPress={() => handleCoursePress('Competência Transversal - Finanças Pessoais')}>
-            <View style={styles.sideBar3}></View> 
-            <Image source={img1} style={styles.courseImage} />
-            <View style={styles.courseTextContainer}>
-              <Text style={styles.courseTitle}>Competência Transversal - Finanças Pessoais</Text>
-              <Text style={styles.courseSubtitle}>Tornar o estudante apto a identificar a importância do equilíbrio financeiro para...</Text>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.courseItem} onPress={() => handleCoursePress('Competência Transversal - Fundamentos de Logística')}>
-            <View style={styles.sideBar3}></View> 
-            <Image source={img1} style={styles.courseImage} />
-            <View style={styles.courseTextContainer}>
-              <Text style={styles.courseTitle}>Competência Transversal - Fundamentos de Logística</Text>
-              <Text style={styles.courseSubtitle}>Conhecer as questões fundamentais da logística, seu histórico, conceitos, e de como utilizar melhor...</Text>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.courseItem} onPress={() => handleCoursePress('Competência Transversal - Propriedade Intelectual')}>
-            <View style={styles.sideBar3}></View> 
-            <Image source={img1} style={styles.courseImage} />
-            <View style={styles.courseTextContainer}>
-              <Text style={styles.courseTitle}>Competência Transversal - Propriedade Intelectual</Text>
-              <Text style={styles.courseSubtitle}>Compreender aspectos ligados à propriedade intelectual, bem como, os benefícios da proteção dos produtos...</Text>
-            </View>
-          </TouchableOpacity>
+          {cursos.map(course => (
+            <TouchableOpacity key={course.id} style={styles.courseItem} onPress={() => handleCoursePress(course)}>
+              <View style={styles.sideBar3}></View> 
+              <Image source={img1} style={styles.courseImage} />
+              <View style={styles.courseTextContainer}>
+                <Text style={styles.courseTitle}>{course.nome}</Text>
+                <Text style={styles.courseSubtitle}>{truncateDescription(course.descricao)}</Text>
+              </View>
+            </TouchableOpacity>
+          ))}
 
         </View>
       </ScrollView>
@@ -81,11 +118,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-  backButton: {
+    backButton: {
     position: 'absolute',
     top: 40, 
     left: 10,
-    zIndex: 1, 
+    zIndex: 1,
     padding: 20,
   },
   sideBar3: {
@@ -117,6 +154,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 0,
     zIndex: 2,
     position: 'relative',
+    shadowRadius: 4,
   },
   scrollViewContent: {
     paddingBottom: 70,
@@ -139,7 +177,10 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#333',
     marginTop: 10,
+    fontFamily: fonts.SemiBold
   },
+  
+
   courseItem: {
     flexDirection: "row",
     alignItems: "center",
@@ -150,6 +191,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
   },
+
+
   courseImage: {
     width: 100,
     height: 100,
@@ -164,14 +207,16 @@ const styles = StyleSheet.create({
   },
   courseTitle: {
     fontSize: 17,
-    fontWeight: 'bold',
+    fontFamily: 'Poppins-Bold',
     color: "#E30613",
   },
   courseSubtitle: {
     fontSize: 13,
+    fontFamily: 'Poppins-Regular',
     color: "#9B9B9B",
     marginTop: 5,
   },
 });
 
 export default App;
+

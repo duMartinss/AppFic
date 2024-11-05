@@ -1,70 +1,114 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, StatusBar, Image, TouchableOpacity, Modal, Button } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons'; // Importa o Ionicons
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, StatusBar, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { colors } from "../../utils/colors";
 import { fonts } from "../../utils/fonts";
 import img1 from "../../assets/senai.png";
-import { useNavigation } from '@react-navigation/native'; // Hook de navegação
+import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
 
 const App = () => {
-  const [modalVisible, setModalVisible] = useState(false); // Estado para controlar a visibilidade do modal
-  const [selectedImage, setSelectedImage] = useState(null); // Estado para armazenar a imagem selecionada
-    const navigation = useNavigation(); // Hook de navegação
+  const navigation = useNavigation();
+  const [cursos, setCursos] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const openModal = (image) => {
-    setSelectedImage(image);
-    setModalVisible(true);
-  };
+  useEffect(() => {
+    const fetchCursos = async () => {
+      try {
+        console.log('Iniciando busca de cursos...');
+        const response = await axios.get('http://10.0.2.2:3000/api/cursos/topico/Design de Moda');
+        console.log('Resposta da API:', response.data);
+        setCursos(response.data);
+      } catch (error) {
+        console.error('Erro detalhado:', error.response?.data || error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleCoursePress = (courseName) => {
-    console.log('Curso selecionado:', courseName);
+    fetchCursos();
+  }, []);
+
+  const handleCoursePress = (course) => {
     navigation.navigate('COURSEDETAILS', { 
-      courseName: courseName
+      courseName: course.nome, // Mudado de nome_curso para nome
+      course: {
+        id: course.id,
+        nome: course.nome,
+        descricao: course.descricao,
+        duracao: course.duracao,
+        dataInicio: course.dataInicio,
+        dataFim: course.dataFim,
+        preco: course.preco,
+        requisitos: course.requisitos,
+        programacao: course.programacao,
+        perfilProfissional: course.perfilProfissional,
+        topico: course.topico,
+        imagem: course.imagem,
+        status: course.status
+      }
     });
   };
 
+  const truncateDescription = (description) => {
+    if (!description) return '';
+    const words = description.split(" ");
+    if (words.length > 20) {
+      return words.slice(0, 20).join(" ") + "...";
+    }
+    return description;
+  };
+
+  if (loading) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color="#FF69B4" />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
-      {/* Configura o estilo da barra de status */}
       <StatusBar backgroundColor="#FF1493" barStyle="light-content" />
       <ScrollView contentContainerStyle={styles.scrollViewContent} showsVerticalScrollIndicator={false}>
-      {/* Faixa no topo */}
-      <View style={styles.topBar}></View>
-      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <View style={styles.topBar}></View>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Ionicons name="arrow-back-outline" size={30} color="white" />
         </TouchableOpacity>
 
-        {/* Contêiner de conteúdo com borderRadius */}
         <View style={styles.contentContainer}>
           <View style={styles.titleContainer}>
             <Text style={styles.title}>Design de Moda, Têxtil, 
             Vestuário, Calçados e Joalheria</Text>
-            {/* Ícone ao lado direito */}
             <Ionicons name="shirt-outline" size={50} color="#FF1493" style={styles.icon} />
           </View>
           <Text style={styles.description}>
             Os cursos do SENAI-SP nas áreas de Design de Moda, Têxtil, Vestuário, Calçado e Joalheria visam formar profissionais com sólida base teórico-metodológica e prática.
           </Text>
-            {/* Lista de Cursos */}
-
-            <TouchableOpacity style={styles.courseItem} onPress={() => handleCoursePress('Costureiro de Máquina Reta e Overloque')}>
-              <View style={styles.sideBar3}></View> 
-              <Image source={img1} style={styles.courseImage} />
+          {cursos.map((curso) => (
+            <TouchableOpacity 
+              key={curso.id}
+              style={styles.courseItem} 
+              onPress={() => handleCoursePress(curso)}
+            >
+              <TouchableOpacity 
+                style={styles.sideBar3}
+                onPress={() => handleCoursePress(curso)}
+              /> 
+              <Image 
+                source={curso.imagem ? { uri: curso.imagem } : img1} 
+                style={styles.courseImage} 
+              />
               <View style={styles.courseTextContainer}>
-                <Text style={styles.courseTitle}>Costureiro de Máquina Reta e Overloque</Text>
-                <Text style={styles.courseSubtitle}>O Curso Costureiro de máquina reta e overloque tem por objetivo o desenvolvimento de competências relativas às...</Text>
+                <Text style={styles.courseTitle}>
+                  {curso.nome}
+                </Text>
+                <Text style={styles.courseSubtitle}>
+                  {truncateDescription(curso.descricao)}
+                </Text>
               </View>
             </TouchableOpacity>
-
-            <TouchableOpacity style={styles.courseItem} onPress={() => handleCoursePress('Costureiro sob medida')}>
-              <View style={styles.sideBar3}></View> 
-              <Image source={img1} style={styles.courseImage} />
-              <View style={styles.courseTextContainer}>
-                <Text style={styles.courseTitle}>Costureiro sob medida</Text>
-                <Text style={styles.courseSubtitle}>O Curso de Qualificação Profissional Costureiro sob medida tem por objetivo o desenvolvimento de competências relativas à elaboração de modelagem, corte em...</Text>
-              </View>
-            </TouchableOpacity>
-
+          ))}
         </View>
       </ScrollView>
     </View>
@@ -86,9 +130,10 @@ const styles = StyleSheet.create({
   sideBar3: {
     position: 'absolute',
     left: 0,
-    height: '60%', // Ajusta a altura da barrinha para 100% do container
+    height: '60%',
     width: 5,
-    backgroundColor: '#FF1493', // Cor da barrinha azul
+    backgroundColor: '#FF69B4',
+    zIndex: 1,
   },
   topBar: {
     position: 'absolute',

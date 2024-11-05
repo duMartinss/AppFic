@@ -1,96 +1,113 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, StatusBar, Image, TouchableOpacity, Modal, Button } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons'; // Importa o Ionicons
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, StatusBar, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { colors } from "../../utils/colors";
 import { fonts } from "../../utils/fonts";
 import img1 from "../../assets/senai.png";
-import { useNavigation } from '@react-navigation/native'; // Hook de navegação
+import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
 
 const App = () => {
-  const [modalVisible, setModalVisible] = useState(false); // Estado para controlar a visibilidade do modal
-  const [selectedImage, setSelectedImage] = useState(null); // Estado para armazenar a imagem selecionada
-    const navigation = useNavigation(); // Hook de navegação
+  const navigation = useNavigation();
+  const [cursos, setCursos] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const openModal = (image) => {
-    setSelectedImage(image);
-    setModalVisible(true);
-  };
+  useEffect(() => {
+    const fetchCursos = async () => {
+      try {
+        console.log('Iniciando busca de cursos...');
+        const response = await axios.get('http://10.0.2.2:3000/api/cursos/topico/Fabricação Mecânica');
+        console.log('Resposta da API:', response.data);
+        setCursos(response.data);
+      } catch (error) {
+        console.error('Erro detalhado:', error.response?.data || error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleCoursePress = (courseName) => {
-    console.log('Curso selecionado:', courseName);
+    fetchCursos();
+  }, []);
+
+  const handleCoursePress = (course) => {
+    console.log('Dados do curso:', course);
     navigation.navigate('COURSEDETAILS', { 
-      courseName: courseName
+      courseName: course.nome,
+      course: {
+        id: course.id,
+        nome: course.nome,
+        descricao: course.descricao,
+        duracao: course.duracao,
+        dataInicio: course.dataInicio,
+        dataFim: course.dataFim,
+        preco: course.preco,
+        requisitos: course.requisitos,
+      }
     });
   };
 
+  const truncateDescription = (description) => {
+    if (!description) return '';
+    const words = description.split(" ");
+    if (words.length > 20) {
+      return words.slice(0, 20).join(" ") + "...";
+    }
+    return description;
+  };
+
+  if (loading) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color="#495057" />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
-      {/* Configura o estilo da barra de status */}
       <StatusBar backgroundColor="#495057" barStyle="light-content" />
       <ScrollView contentContainerStyle={styles.scrollViewContent} showsVerticalScrollIndicator={false}>
-      {/* Faixa no topo */}
-      <View style={styles.topBar}></View>
-      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <View style={styles.topBar}></View>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Ionicons name="arrow-back-outline" size={30} color="white" />
         </TouchableOpacity>
-
-        {/* Contêiner de conteúdo com borderRadius */}
         <View style={styles.contentContainer}>
           <View style={styles.titleContainer}>
             <Text style={styles.title}>Fabricação Mecânica e Manutenção Industrial</Text>
-            {/* Ícone ao lado direito */}
             <Ionicons name="construct-outline" size={50} color="#495057" style={styles.icon} />
           </View>
           <Text style={styles.description}>
             Os cursos do SENAI-SP nas áreas de Fabricação Mecânica e Manutenção Industrial são voltados para as necessidades da indústria.
           </Text>
-            {/* Lista de Cursos */}
 
-            <TouchableOpacity style={styles.courseItem} onPress={() => handleCoursePress('Inspetor de Qualidade')}>
-              <View style={styles.sideBar3}></View> 
-              <Image source={img1} style={styles.courseImage} />
-              <View style={styles.courseTextContainer}>
-                <Text style={styles.courseTitle}>Inspetor de Qualidade</Text>
-                <Text style={styles.courseSubtitle}>O Curso de Qualificação Profissional - Inspetor de Qualidade tem por objetivo o desenvolvimento de competências relativas à condução e realização de inspeções...</Text>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.courseItem} onPress={() => handleCoursePress('Leitura e Interpretação de Desenho Técnico Mecânico')}>
-              <View style={styles.sideBar3}></View> 
-              <Image source={img1} style={styles.courseImage} />
-              <View style={styles.courseTextContainer}>
-                <Text style={styles.courseTitle}>Leitura e Interpretação de Desenho Técnico Mecânico</Text>
-                <Text style={styles.courseSubtitle}>O Curso de Aperfeiçoamento Profissional - Leitura e Interpretação de Desenho Técnico Mecânico tem por objetivo o desenvolvimento de competências relativas...</Text>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.courseItem} onPress={() => handleCoursePress('Programação, Preparação e Operação de Torno CNC')}>
-              <View style={styles.sideBar3}></View> 
-              <Image source={img1} style={styles.courseImage} />
-              <View style={styles.courseTextContainer}>
-                <Text style={styles.courseTitle}>Programação, Preparação e Operação de Torno CNC</Text>
-                <Text style={styles.courseSubtitle}>O Curso de Aperfeiçoamento Profissional - Programação, Preparação e Operação de Torno CNC tem por objetivo o desenvolvimento de competências...</Text>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.courseItem} onPress={() => handleCoursePress('SOLIDWORKS')}>
-              <View style={styles.sideBar3}></View> 
-              <Image source={img1} style={styles.courseImage} />
-              <View style={styles.courseTextContainer}>
-                <Text style={styles.courseTitle}>SOLIDWORKS</Text>
-                <Text style={styles.courseSubtitle}>O curso de Aperfeiçoamento Profissional de Solidworks tem por objetivo o desenvolvimento de competências relativas à elaboração de modelagem em desenhos de projetos...</Text>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.courseItem} onPress={() => handleCoursePress('Torneiro Mecânico')}>
-              <View style={styles.sideBar3}></View> 
-              <Image source={img1} style={styles.courseImage} />
-              <View style={styles.courseTextContainer}>
-                <Text style={styles.courseTitle}>Torneiro Mecânico</Text>
-                <Text style={styles.courseSubtitle}>O Curso de Qualificação Profissional Torneiro Mecânico tem por objetivo o desenvolvimento de competências relativas à operação de torno mecânico convencional...</Text>
-              </View>
-            </TouchableOpacity>
-
+          {cursos.length === 0 ? (
+            <Text style={styles.noCourses}>Nenhum curso encontrado nesta área.</Text>
+          ) : (
+            cursos.map((curso) => (
+              <TouchableOpacity 
+                key={curso.id}
+                style={styles.courseItem} 
+                onPress={() => handleCoursePress(curso)}
+              >
+                <TouchableOpacity 
+                  style={styles.sideBar3}
+                  onPress={() => handleCoursePress(curso)}
+                /> 
+                <Image 
+                  source={curso.imagem ? { uri: curso.imagem } : img1} 
+                  style={styles.courseImage} 
+                />
+                <View style={styles.courseTextContainer}>
+                  <Text style={styles.courseTitle}>
+                    {curso.nome}
+                  </Text>
+                  <Text style={styles.courseSubtitle}>
+                    {truncateDescription(curso.descricao)}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            ))
+          )}
         </View>
       </ScrollView>
     </View>

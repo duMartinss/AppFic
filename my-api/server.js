@@ -258,19 +258,37 @@ app.get('/api/cursos', async (req, res) => {
 // Rota para obter cursos por tópico
 app.get('/api/cursos/topico/:topico', async (req, res) => {
   const { topico } = req.params;
-
+  
   try {
     const connection = await mysql.createConnection(dbConfig);
-    const [results] = await connection.execute('SELECT * FROM cursos WHERE topico_curso = ?', [topico]);
+    
+    const [cursos] = await connection.execute(
+      'SELECT * FROM cursos WHERE topico_curso LIKE ?',
+      [`%${topico}%`]
+    );
 
-    if (results.length === 0) {
-      return res.status(404).json({ message: 'Nenhum curso encontrado para este tópico.' });
-    }
+    const cursosFormatados = cursos.map(curso => ({
+      id: curso.id_curso,
+      nome: curso.nome_curso,
+      descricao: curso.descricao_curso,
+      duracao: curso.horas_curso,
+      dataInicio: curso.dataInicio_curso,
+      dataFim: curso.dataFim_curso,
+      preco: curso.statusPag_curso,
+      requisitos: curso.requisitos_curso,
+      programacao: curso.programacao_curso,
+      perfilProfissional: curso.perfil_curso,
+      topico_curso: curso.topico_curso,
+      imagem: curso.imagem_curso
+    }));
 
-    res.status(200).json(results);
+    res.status(200).json(cursosFormatados);
   } catch (error) {
-    console.error('Erro ao buscar cursos por tópico:', error.message);
-    return res.status(500).json({ message: 'Erro ao buscar cursos.' });
+    console.error('Erro ao buscar cursos:', error);
+    res.status(500).json({ 
+      message: 'Erro ao buscar cursos',
+      error: error.message 
+    });
   }
 });
 
@@ -557,6 +575,102 @@ app.put('/api/usuario/:id/imagem', async (req, res) => {
     res.status(500).json({ 
       success: false, 
       message: 'Erro ao atualizar imagem' 
+    });
+  }
+});
+
+// Rota para editar curso
+app.put('/api/cursos/editar/:id', async (req, res) => {
+  const { id } = req.params;
+  console.log('ID recebido:', id);
+  console.log('Dados recebidos:', req.body);
+
+  try {
+    const connection = await mysql.createConnection(dbConfig);
+    
+    const sql = `
+      UPDATE cursos 
+      SET nome_curso = ?,
+          dataInicio_curso = ?,
+          dataFim_curso = ?,
+          horas_curso = ?,
+          statusPag_curso = ?,
+          descricao_curso = ?,
+          programacao_curso = ?,
+          requisitos_curso = ?,
+          perfil_curso = ?
+      WHERE id_curso = ?`;
+    
+    const values = [
+      req.body.nome,
+      req.body.dataInicio,
+      req.body.dataFim,
+      req.body.duracao,
+      req.body.status,
+      req.body.descricao,
+      req.body.programacao,
+      req.body.requisitos,
+      req.body.perfilProfissional,
+      id
+    ];
+
+    await connection.execute(sql, values);
+
+    res.status(200).json({ message: 'Curso atualizado com sucesso!' });
+  } catch (error) {
+    console.error('Erro ao atualizar curso:', error.message);
+    return res.status(500).json({ message: 'Erro ao atualizar curso.' });
+  }
+});
+
+// Rota para atualizar o status do curso
+app.put('/api/cursos/status/:id', async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
+  
+  console.log('Recebido pedido de atualização:', { id, status }); // Debug
+  
+  try {
+    const connection = await mysql.createConnection(dbConfig);
+    
+    // Primeiro, verifica se o curso existe
+    const [curso] = await connection.execute(
+      'SELECT * FROM cursos WHERE id_curso = ?',
+      [id]
+    );
+
+    if (curso.length === 0) {
+      console.log('Curso não encontrado:', id);
+      return res.status(404).json({ 
+        message: 'Curso não encontrado.' 
+      });
+    }
+
+    // Atualiza o status do curso
+    const sql = `
+      UPDATE cursos 
+      SET status_curso = ? 
+      WHERE id_curso = ?
+    `;
+    
+    console.log('Executando query:', sql, [status, id]); // Debug
+    
+    const [result] = await connection.execute(sql, [status, id]);
+    
+    await connection.end();
+    
+    console.log('Resultado da atualização:', result); // Debug
+    
+    return res.status(200).json({ 
+      message: 'Status do curso atualizado com sucesso.',
+      status: status 
+    });
+
+  } catch (error) {
+    console.error('Erro ao atualizar status do curso:', error);
+    return res.status(500).json({ 
+      message: 'Erro ao atualizar status do curso.',
+      error: error.message 
     });
   }
 });

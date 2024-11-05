@@ -20,6 +20,7 @@ import ListaUsuario from './screen/ListaUsuario.js';
 import ListaCurso from './screen/ListaCurso.js';
 import CourseDetails from './screen/courseDetails.js';
 import SaibaMaisScreen from './screen/SaibaMais.js';
+import EditarCursoAdmin from './screen/EditarCursoAdmin.js';
 import TrilhaVisualizerScreen from './screen/TrilhaVisualizerScreen.js';
 import AppLoading from 'expo-app-loading';
 import * as Font from 'expo-font';
@@ -297,6 +298,7 @@ export default function App() {
           <Stack.Screen name="COURSEDETAILS" component={CourseDetails} />
           <Stack.Screen name="CERTIFICADO" component={Certificado} />
           <Stack.Screen name="ADMIN" component={Admin} />
+          <Stack.Screen name="EDITARCURSOADMIN" component={EditarCursoAdmin} />
           <Stack.Screen name="LISTA" component={ListaUsuario} />
           <Stack.Screen name="LISTACURSO" component={ListaCurso} />
           <Stack.Screen name="EDITARCURSO" component={EditarCurso} />

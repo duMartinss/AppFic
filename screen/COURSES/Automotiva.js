@@ -1,122 +1,121 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, StatusBar, Image, TouchableOpacity, Modal, Button } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons'; // Importa o Ionicons
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, StatusBar, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { colors } from "../../utils/colors";
 import { fonts } from "../../utils/fonts";
 import img1 from "../../assets/senai.png";
-import { useNavigation } from '@react-navigation/native'; // Hook de navegação
+import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
 
 const App = () => {
-  const [modalVisible, setModalVisible] = useState(false); // Estado para controlar a visibilidade do modal
-  const [selectedImage, setSelectedImage] = useState(null); // Estado para armazenar a imagem selecionada
-    const navigation = useNavigation(); // Hook de navegação
+  const navigation = useNavigation();
+  const [cursos, setCursos] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const openModal = (image) => {
-    setSelectedImage(image);
-    setModalVisible(true);
-  };
+  useEffect(() => {
+    const fetchCursos = async () => {
+      try {
+        console.log('Iniciando busca de cursos...');
+        const response = await axios.get('http://10.0.2.2:3000/api/cursos/topico/Automotiva');
+        console.log('Resposta da API:', response.data);
+        setCursos(response.data);
+      } catch (error) {
+        console.error('Erro detalhado:', error.response?.data || error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleCoursePress = (courseName) => {
-    console.log('Curso selecionado:', courseName);
+    fetchCursos();
+  }, []);
+
+  const handleCoursePress = (course) => {
     navigation.navigate('COURSEDETAILS', { 
-      courseName: courseName
+      courseName: course.nome, // Mudado de nome_curso para nome
+      course: {
+        id: course.id,
+        nome: course.nome,
+        descricao: course.descricao,
+        duracao: course.duracao,
+        dataInicio: course.dataInicio,
+        dataFim: course.dataFim,
+        preco: course.preco,
+        requisitos: course.requisitos,
+        programacao: course.programacao,
+        perfilProfissional: course.perfilProfissional,
+        topico: course.topico,
+        imagem: course.imagem,
+        status: course.status
+      }
     });
   };
 
+  const truncateDescription = (description) => {
+    if (!description) return '';
+    const words = description.split(" ");
+    if (words.length > 20) {
+      return words.slice(0, 20).join(" ") + "...";
+    }
+    return description;
+  };
+
+  if (loading) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color="#C0C0C0" />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
-      {/* Configura o estilo da barra de status */}
       <StatusBar backgroundColor="#C0C0C0" barStyle="light-content" />
       <ScrollView contentContainerStyle={styles.scrollViewContent} showsVerticalScrollIndicator={false}>
-      {/* Faixa no topo */}
-      <View style={styles.topBar}></View>
-      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <View style={styles.topBar}></View>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Ionicons name="arrow-back-outline" size={30} color="white" />
         </TouchableOpacity>
-        {/* Contêiner de conteúdo com borderRadius */}
         <View style={styles.contentContainer}>
           <View style={styles.titleContainer}>
             <Text style={styles.title}>Automotiva</Text>
-            {/* Ícone ao lado direito */}
-            <Ionicons name="speedometer-outline" size={50} color="#C0C0C0" style={styles.icon} />
+            <Ionicons name="speedometer-outline" size={40} color="#C0C0C0" style={styles.icon} />
           </View>
           <Text style={styles.description}>
-            Os cursos do SENAI-SP na área de Automotiva abrangem os principais temas relacionados ao segmento, desde os conceitos básicos até a conceituação de funcionamento e funções dos sistemas complexos, como sistemas mecânicos principais e secundários.
+            Os cursos do SENAI-SP na área Automotiva abrangem: Mecânica Automotiva, 
+            Sistemas de Injeção Eletrônica, Diagnóstico e muito mais.
           </Text>
-            {/* Lista de Cursos */}
 
-            <TouchableOpacity style={styles.courseItem} onPress={() => handleCoursePress('Caixa de Mudanças de Veículos Pesados')}>
-              <View style={styles.sideBar3}></View> 
-              <Image source={img1} style={styles.courseImage} />
-              <View style={styles.courseTextContainer}>
-                <Text style={styles.courseTitle}>Caixa de Mudanças de Veículos Pesados</Text>
-                <Text style={styles.courseSubtitle}>O Curso de Aperfeiçoamento Profissional Caixa de Mudanças de Veículos Pesados tem por objetivo o desenvolvimento de competências relativas à montagem, desmontagem...</Text>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.courseItem} onPress={() => handleCoursePress('Diagnóstico e Manutenção de Injeção Eletrônica de Motores Diesel')}>
-              <View style={styles.sideBar3}></View> 
-              <Image source={img1} style={styles.courseImage} />
-              <View style={styles.courseTextContainer}>
-                <Text style={styles.courseTitle}>Diagnóstico e Manutenção de Injeção Eletrônica de Motores Diesel</Text>
-                <Text style={styles.courseSubtitle}>O curso de Aperfeiçoamento Profissional de Diagnóstico e Manutenção de Injeção Eletrônica de Motores Diesel tem por objetivo realização da manutenção e...</Text>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.courseItem} onPress={() => handleCoursePress('Eletricista Automotivo de Veículos Leves')}>
-              <View style={styles.sideBar3}></View> 
-              <Image source={img1} style={styles.courseImage} />
-              <View style={styles.courseTextContainer}>
-                <Text style={styles.courseTitle}>Eletricista Automotivo de Veículos Leves</Text>
-                <Text style={styles.courseSubtitle}>O curso de Qualificação Profissional de Eletricista Automotivo de Veículos Leves tem por objetivo o desenvolvimento de competências relativas à realização...</Text>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.courseItem} onPress={() => handleCoursePress('Manutenção e Diagnóstico de Transmissão Mecânica e Automatizada de Veículos Leves')}>
-              <View style={styles.sideBar3}></View> 
-              <Image source={img1} style={styles.courseImage} />
-              <View style={styles.courseTextContainer}>
-                <Text style={styles.courseTitle}>Manutenção e Diagnóstico de Transmissão Mecânica e Automatizada de Veículos Leves</Text>
-                <Text style={styles.courseSubtitle}>O curso de Aperfeiçoamento Profissional de Manutenção e Diagnóstico de Sistemas de Climatização de Veículos Leves tem por objetivo realizar manutenção em sistemas...</Text>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.courseItem} onPress={() => handleCoursePress('Mecânico Auxiliar Automotivo de Veículos Leves')}>
-              <View style={styles.sideBar3}></View> 
-              <Image source={img1} style={styles.courseImage} />
-              <View style={styles.courseTextContainer}>
-                <Text style={styles.courseTitle}>Mecânico Auxiliar Automotivo de Veículos Leves</Text>
-                <Text style={styles.courseSubtitle}>O curso de Qualificação Profissional de Mecânico Auxiliar Automotivo de Veículos Leves tem por objetivo o desenvolvimento de competências relativas à realizaçãos...</Text>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.courseItem} onPress={() => handleCoursePress('Mecânico de Motor Ciclo Diesel')}>
-              <View style={styles.sideBar3}></View> 
-              <Image source={img1} style={styles.courseImage} />
-              <View style={styles.courseTextContainer}>
-                <Text style={styles.courseTitle}>Mecânico de Motor Ciclo Diesel</Text>
-                <Text style={styles.courseSubtitle}>O curso de Qualificação Profissional de Mecânico de Motor Ciclo Diesel tem por objetivo realizar a manutenção nos sistemas mecânicos e elétricos de motores ciclo Diesel, diagnosticando e corrigindo defeitos, seguindo normas e procedimentos técnicos, ambientais e de saúde...</Text>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.courseItem} onPress={() => handleCoursePress('Mecânico de Motor Ciclo Otto')}>
-              <View style={styles.sideBar3}></View> 
-              <Image source={img1} style={styles.courseImage} />
-              <View style={styles.courseTextContainer}>
-                <Text style={styles.courseTitle}>Mecânico de Motor Ciclo Otto</Text>
-                <Text style={styles.courseSubtitle}>O curso de Mecânico de Motor Ciclo Otto tem por objetivo o desenvolvimento de competências relativas à realização de manutenção em motores ciclo Otto, diagnosticando...</Text>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.courseItem} onPress={() => handleCoursePress('Mecânico de Transmissão Mecânica e Eixo Traseiro de Veículos Pesados Rodoviários')}>
-              <View style={styles.sideBar3}></View> 
-              <Image source={img1} style={styles.courseImage} />
-              <View style={styles.courseTextContainer}>
-                <Text style={styles.courseTitle}>Mecânico de Transmissão Mecânica e Eixo Traseiro de Veículos Pesados Rodoviários</Text>
-                <Text style={styles.courseSubtitle}>O Curso de Mecânico de Transmissão Mecânica e Eixo Traseiro de Veículos Pesados Rodoviários tem por objetivo o desenvolvimento de competências relativas a realização...</Text>
-              </View>
-            </TouchableOpacity>
-
+          {cursos.length === 0 ? (
+            <Text style={styles.noCourses}>Nenhum curso encontrado nesta área.</Text>
+          ) : (
+            cursos.map((curso) => {
+              console.log('Renderizando curso:', curso); // Debug
+              return (
+                <TouchableOpacity 
+                  key={curso.id}
+                  style={styles.courseItem} 
+                  onPress={() => handleCoursePress(curso)}
+                >
+                  <TouchableOpacity 
+                    style={styles.sideBar3}
+                    onPress={() => handleCoursePress(curso)}
+                  /> 
+                  <Image 
+                    source={curso.imagem ? { uri: curso.imagem } : img1} 
+                    style={styles.courseImage} 
+                  />
+                  <View style={styles.courseTextContainer}>
+                    <Text style={styles.courseTitle}>
+                      {curso.nome || 'Nome não disponível'}
+                    </Text>
+                    <Text style={styles.courseSubtitle}>
+                      {truncateDescription(curso.descricao) || 'Descrição não disponível'}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              );
+            })
+          )}
         </View>
       </ScrollView>
     </View>
@@ -128,30 +127,31 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-    backButton: {
+  backButton: {
     position: 'absolute',
     top: 40, 
     left: 10,
-    zIndex: 1, // Prioridade do botão sobre o conteúdo
+    zIndex: 1,
     padding: 20,
   },
   sideBar3: {
     position: 'absolute',
     left: 0,
-    height: '60%', // Ajusta a altura da barrinha para 100% do container
+    height: '60%',
     width: 5,
-    backgroundColor: '#C0C0C0', // Cor da barrinha azul
+    backgroundColor: '#C0C0C0',
+    zIndex: 1,
   },
   topBar: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
-    height: 180, // Altura da faixa
+    height: 180,
     backgroundColor: '#C0C0C0',
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 0, // Prioridade abaixo do botão de voltar, mas sobre o conteúdo
+    zIndex: 0,
     paddingTop: 40,
   },
   contentContainer: {
@@ -160,37 +160,35 @@ const styles = StyleSheet.create({
     paddingVertical: 25,
     borderTopRightRadius: 15,
     borderTopLeftRadius: 15,
-    marginTop: 120, // Ajustado para estar sobre a faixa
+    marginTop: 120,
     marginHorizontal: 0,
-    zIndex: 2, // Eleve o zIndex para garantir que sobreponha o botão
-    position: 'relative', // Mantém o fluxo natural, mas acima do botãoombra
-    shadowRadius: 4, // Raio da sombra
+    zIndex: 2,
+    position: 'relative',
+    shadowRadius: 4,
   },
   scrollViewContent: {
     paddingBottom: 70,
   },
   titleContainer: {
-    flexDirection: 'row', // Exibe o título e o ícone na mesma linha
-    justifyContent: 'space-between', // Coloca o título à esquerda e o ícone à direita
-    alignItems: 'center', // Centraliza verticalmente o título e o ícone
-    paddingRight: 10, // Cria espaço entre o texto e a borda direita
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingRight: 10,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 15, // Aumenta o espaçamento entre o título e a descrição
+    marginBottom: 15,
   },
   icon: {
-    marginTop: -12, // Eleva o ícone para aproximá-lo ao centro da linha
+    marginTop: -12,
   },
   description: {
-    fontSize: 12, // Aumenta um pouco o tamanho do texto
+    fontSize: 12,
     color: '#333',
-    marginTop: 10, // Espaço adicional entre o título e a descrição
+    marginTop: 10,
     fontFamily: fonts.SemiBold
   },
-  
-
   courseItem: {
     flexDirection: "row",
     alignItems: "center",
@@ -201,8 +199,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
   },
-
-
   courseImage: {
     width: 100,
     height: 100,

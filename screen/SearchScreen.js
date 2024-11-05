@@ -56,9 +56,9 @@ export default function BuscaScreen() {
   };
 
   // Função para buscar cursos por categoria
-  const fetchCoursesByCategory = async (category) => {
+  const fetchCoursesByCategory = async () => {
     try {
-      const response = await fetch(`http://10.0.2.2:3000/api/cursos/topico/${category}`); // Requisição para a API com a categoria
+      const response = await fetch(`http://10.0.2.2:3000/api/cursos/topico`); // Requisição para a API com a categoria
       const data = await response.json(); // Converte a resposta para JSON
       setCourses(data); // Atualiza a lista de cursos
       setFilteredCourses(data); // Filtra cursos pela nova categoria

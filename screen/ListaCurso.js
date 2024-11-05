@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, StatusBar, Image, TouchableOpacity } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { colors } from "../utils/colors";
 import { fonts } from "../utils/fonts";
@@ -11,32 +12,39 @@ const CourseListScreen = () => {
   const [courses, setCourses] = useState([]); // Estado para armazenar os cursos
   const navigation = useNavigation(); // Hook para acessar a navegação
 
-  useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        const response = await axios.get('http://10.0.2.2:3000/api/cursos'); // Rota que retorna a lista de cursos
-        setCourses(response.data); // Armazena os cursos no estado
-      } catch (error) {
-        console.error("Erro ao buscar cursos:", error);
-      }
-    };
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchCourses = async () => {
+        try {
+          const response = await axios.get('http://10.0.2.2:3000/api/cursos'); // Rota que retorna a lista de cursos
+          setCourses(response.data); // Armazena os cursos no estado
+        } catch (error) {
+          console.error("Erro ao buscar cursos:", error);
+        }
+      };
 
-    fetchCourses(); // Chama a função para buscar cursos
-  }, []);
+      fetchCourses(); // Chama a função para buscar cursos
+    }, [])
+  );
 
   const handleCoursePress = (course) => {
-    navigation.navigate('COURSEDETAILS', {
+    navigation.navigate('EDITARCURSOADMIN', {
       courseName: course.nome_curso,
-      courseId: course.id_curso,
-      courseDescription: course.descricao_curso,
-      courseHours: course.horas_curso,
-      courseStartDate: course.dataInicio_curso,
-      courseEndDate: course.dataFim_curso,
-      courseStatus: course.statusPag_curso,
-      courseRequirements: course.requisitos_curso,
-      courseSchedule: course.programacao_curso,
-      courseProfile: course.perfil_curso,
-      courseCategory: course.topico_curso
+      course: {
+        id: course.id_curso,
+        nome: course.nome_curso,
+        descricao: course.descricao_curso,
+        duracao: course.horas_curso,
+        dataInicio: course.dataInicio_curso,
+        dataFim: course.dataFim_curso,
+        preco: course.statusPag_curso,
+        requisitos: course.requisitos_curso,
+        programacao: course.programacao_curso,
+        perfilProfissional: course.perfil_curso,
+        topico_curso: course.topico_curso,
+        imagem: course.imagem_curso,
+        status_curso: Number(course.status_curso)
+      }
     });
   };
 
@@ -67,7 +75,10 @@ const CourseListScreen = () => {
             courses.map((course) => (
               <TouchableOpacity 
                 key={course.id_curso} 
-                style={styles.courseItem} 
+                style={[
+                  styles.courseItem,
+                  course.status_curso === 0 && styles.inactiveCourseItem
+                ]} 
                 onPress={() => handleCoursePress(course)}
                 activeOpacity={0.7} // Adiciona feedback visual ao toque
               >
@@ -189,6 +200,18 @@ const styles = StyleSheet.create({
   courseInfo: {
     fontSize: 14,
     color: colors.darkred,
+  },
+  inactiveCourseItem: {
+    opacity: 0.5,
+  },
+  inactiveImage: {
+    opacity: 0.5,
+  },
+  inactiveContent: {
+    opacity: 0.5,
+  },
+  inactiveText: {
+    opacity: 0.5,
   },
 });
 

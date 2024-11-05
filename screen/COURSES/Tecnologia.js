@@ -1,124 +1,114 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, StatusBar, Image, TouchableOpacity, Modal, Button } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons'; // Importa o Ionicons
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, StatusBar, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { colors } from "../../utils/colors";
 import { fonts } from "../../utils/fonts";
 import img1 from "../../assets/senai.png";
-import { useNavigation } from '@react-navigation/native'; // Hook de navegação
+import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
 
 const App = () => {
-  const navigation = useNavigation(); // Hook de navegação
+  const navigation = useNavigation();
+  const [cursos, setCursos] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleCoursePress = (courseName) => {
-    console.log('Curso selecionado:', courseName);
+  useEffect(() => {
+    const fetchCursos = async () => {
+      try {
+        console.log('Iniciando busca de cursos...');
+        const response = await axios.get('http://10.0.2.2:3000/api/cursos/topico/Tecnologia');
+        console.log('Resposta da API:', response.data);
+        setCursos(response.data);
+      } catch (error) {
+        console.error('Erro detalhado:', error.response?.data || error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCursos();
+  }, []);
+
+  const handleCoursePress = (course) => {
     navigation.navigate('COURSEDETAILS', { 
-      courseName: courseName
+      courseName: course.nome, // Mudado de nome_curso para nome
+      course: {
+        id: course.id,
+        nome: course.nome,
+        descricao: course.descricao,
+        duracao: course.duracao,
+        dataInicio: course.dataInicio,
+        dataFim: course.dataFim,
+        preco: course.preco,
+        requisitos: course.requisitos,
+        programacao: course.programacao,
+        perfilProfissional: course.perfilProfissional,
+        topico: course.topico,
+        imagem: course.imagem,
+        status: course.status
+      }
     });
   };
 
+  const truncateDescription = (description) => {
+    if (!description) return '';
+    const words = description.split(" ");
+    if (words.length > 20) {
+      return words.slice(0, 20).join(" ") + "...";
+    }
+    return description;
+  };
+
+  if (loading) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color="#1E3A8A" />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
-      {/* Configura o estilo da barra de status */}
       <StatusBar backgroundColor="#1E3A8A" barStyle="light-content" />
       <ScrollView contentContainerStyle={styles.scrollViewContent} showsVerticalScrollIndicator={false}>
-      {/* Faixa no topo */}
-      <View style={styles.topBar}></View>
-      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <View style={styles.topBar}></View>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Ionicons name="arrow-back-outline" size={30} color="white" />
         </TouchableOpacity>
-        {/* Contêiner de conteúdo com borderRadius */}
         <View style={styles.contentContainer}>
           <View style={styles.titleContainer}>
             <Text style={styles.title}>Tecnologia da Informação e Informática</Text>
-            {/* Ícone ao lado direito */}
             <Ionicons name="laptop-outline" size={50} color="#1E3A8A" style={styles.icon} />
           </View>
           <Text style={styles.description}>
             Os cursos do SENAI-SP nas áreas de Tecnologia da Informação e Informática abrangem: Técnico de Redes de Computadores, Desenvolvimento de Sistemas, Informática para Internet, entre outros.
           </Text>
-            {/* Lista de Cursos */}
 
-            <TouchableOpacity style={styles.courseItem} onPress={() => handleCoursePress('CCNA V7: INTRODUCTION TO NETWORKS')}>
-              <View style={styles.sideBar3}></View> 
-              <Image source={img1} style={styles.courseImage} />
-              <View style={styles.courseTextContainer}>
-                <Text style={styles.courseTitle}>CCNA V7: INTRODUCTION TO NETWORKS</Text>
-                <Text style={styles.courseSubtitle}>O Curso de Aperfeiçoamento CCNA V7: INTRODUCTION TO NETWORKS tem por objetivo desenvolver competências profissionais referentes ao planejamento, configuração e...</Text>
-              </View>
-            </TouchableOpacity>
-
-             <TouchableOpacity style={styles.courseItem} onPress={() => handleCoursePress('CCNA V7: SWITCHING, ROUTING AND WIRELESS ESSENTIALS')}>
-              <View style={styles.sideBar3}></View> 
-              <Image source={img1} style={styles.courseImage} />
-              <View style={styles.courseTextContainer}>
-                <Text style={styles.courseTitle}>CCNA V7: SWITCHING, ROUTING AND WIRELESS ESSENTIALS</Text>
-                <Text style={styles.courseSubtitle}>O Curso CCNA V7: SWITCHING, ROUTING AND WIRELESS ESSENTIALS, tem por objetivo desenvolver competências profissionais referentes a configuração e solução de problemas...</Text>
-              </View>
-            </TouchableOpacity>
-            
-             <TouchableOpacity style={styles.courseItem} onPress={() => handleCoursePress('Fundamentos de Ciência de Dados - Google Cloud')}>
-              <View style={styles.sideBar3}></View> 
-              <Image source={img1} style={styles.courseImage} />
-              <View style={styles.courseTextContainer}>
-                <Text style={styles.courseTitle}>Fundamentos de Ciência de Dados - Google Cloud</Text>
-                <Text style={styles.courseSubtitle}>O curso Fundamentos de Ciência de Dados - Google Cloud tem por objetivo desenvolver capacidades que possibilitem ao concluinte implementar serviços de ciência de dados...</Text>
-              </View>
-            </TouchableOpacity>
-
-             <TouchableOpacity style={styles.courseItem} onPress={() => handleCoursePress('Implantação de Serviços em Nuvem - AWS Cloud Practitioner Foundational')}>
-              <View style={styles.sideBar3}></View> 
-              <Image source={img1} style={styles.courseImage} />
-              <View style={styles.courseTextContainer}>
-                <Text style={styles.courseTitle}>Implantação de Serviços em Nuvem - AWS Cloud Practitioner Foundational</Text>
-                <Text style={styles.courseSubtitle}>O Curso de Aperfeiçoamento Profissional de Implantação de Serviços em Nuvem - AWS Cloud Practitioner Foundational tem por objetivo o desenvolvimento de...</Text>
-              </View>
-            </TouchableOpacity>
-
-             <TouchableOpacity style={styles.courseItem} onPress={() => handleCoursePress('Implantação de Serviços em Nuvem - Microsoft AZ-900')}>
-              <View style={styles.sideBar3}></View> 
-              <Image source={img1} style={styles.courseImage} />
-              <View style={styles.courseTextContainer}>
-                <Text style={styles.courseTitle}>Implantação de Serviços em Nuvem - Microsoft AZ-900</Text>
-                <Text style={styles.courseSubtitle}>O Curso de Aperfeiçoamento Profissional de Implantação de Serviços em Nuvem - Microsoft AZ-900 tem por objetivo o desenvolvimento de competências relativas à implantação...</Text>
-              </View>
-            </TouchableOpacity>
-
-             <TouchableOpacity style={styles.courseItem} onPress={() => handleCoursePress('Implantação e Análise de Dados em Nuvem - Microsoft DP-900')}>
-              <View style={styles.sideBar3}></View> 
-              <Image source={img1} style={styles.courseImage} />
-              <View style={styles.courseTextContainer}>
-                <Text style={styles.courseTitle}>Implantação e Análise de Dados em Nuvem - Microsoft DP-900</Text>
-                <Text style={styles.courseSubtitle}>O curso de Implantação e Análise de Dados em Nuvem tem por objetivo preparar o estudante para certificações como a Microsoft DP-900, desenvolvendo capacidades...</Text>
-              </View>
-            </TouchableOpacity>
-
-             <TouchableOpacity style={styles.courseItem} onPress={() => handleCoursePress('Microsoft Power BI')}>
-              <View style={styles.sideBar3}></View> 
-              <Image source={img1} style={styles.courseImage} />
-              <View style={styles.courseTextContainer}>
-                <Text style={styles.courseTitle}>Microsoft Power BI</Text>
-                <Text style={styles.courseSubtitle}>O curso de Aperfeiçoamento Profissional de Microsoft Power BI tem por objetivo o desenvolvimento de competências relacionadas desenvolver soluções por meio da plataforma...</Text>
-              </View>
-            </TouchableOpacity>
-
-             <TouchableOpacity style={styles.courseItem} onPress={() => handleCoursePress('Programação em Python para Data Science')}>
-              <View style={styles.sideBar3}></View> 
-              <Image source={img1} style={styles.courseImage} />
-              <View style={styles.courseTextContainer}>
-                <Text style={styles.courseTitle}>Programação em Python para Data Science</Text>
-                <Text style={styles.courseSubtitle}>O Curso de Aperfeiçoamento Profissional Programação em Python para Data Science tem por objetivo o desenvolvimento de competências relativas a programação utilizando codificações na linguagem...</Text>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.courseItem} onPress={() => handleCoursePress('Soluções integradas com IOT')}>
-              <View style={styles.sideBar3}></View> 
-              <Image source={img1} style={styles.courseImage} />
-              <View style={styles.courseTextContainer}>
-                <Text style={styles.courseTitle}>Soluções integradas com IOT</Text>
-                <Text style={styles.courseSubtitle}>O Curso de Aperfeiçoamento Profissional de Soluções integradas com IoT tem por objetivo o desenvolvimento de competências relativas à implementação de soluções...</Text>
-              </View>
-            </TouchableOpacity>
-
+          {cursos.length === 0 ? (
+            <Text style={styles.noCourses}>Nenhum curso encontrado nesta área.</Text>
+          ) : (
+            cursos.map((curso) => (
+              <TouchableOpacity 
+                key={curso.id}
+                style={styles.courseItem} 
+                onPress={() => handleCoursePress(curso)}
+              >
+                <View style={styles.sideBar3}></View> 
+                <Image 
+                  source={curso.imagem ? { uri: curso.imagem} : img1} 
+                  style={styles.courseImage} 
+                />
+                <View style={styles.courseTextContainer}>
+                  <Text style={styles.courseTitle}>
+                    {curso.nome}
+                  </Text>
+                  <Text style={styles.courseSubtitle}>
+                    {truncateDescription(curso.descricao)}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            ))
+          )}
         </View>
       </ScrollView>
     </View>
@@ -164,7 +154,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 15,
     marginTop: 120, // Ajustado para estar sobre a faixa
     marginHorizontal: 0,
-    zIndex: 2, // Eleve o zIndex para garantir que sobreponha o botão
+    zIndex: 2, // Eleve o zIndex para garantir que sobreponha o botãoombra
     position: 'relative', // Mantém o fluxo natural, mas acima do botãoombra
     shadowRadius: 4, // Raio da sombra
   },
