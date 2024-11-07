@@ -186,7 +186,7 @@ export default function CriarCursosScreen() {
         }
 
         try {
-            const response = await axios.post('http://10.0.2.2:3000/api/curso', courseData);
+            const response = await axios.post('http://4.228.217.151:3000/api/curso', courseData);
             Alert.alert('Sucesso', response.data.message);
             setCursoNome('');
             setStartDate('');

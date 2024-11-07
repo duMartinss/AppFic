@@ -16,7 +16,7 @@ const CourseListScreen = () => {
     React.useCallback(() => {
       const fetchCourses = async () => {
         try {
-          const response = await axios.get('http://10.0.2.2:3000/api/cursos'); // Rota que retorna a lista de cursos
+          const response = await axios.get('http://4.228.217.151:3000/api/cursos'); // Rota que retorna a lista de cursos
           setCourses(response.data); // Armazena os cursos no estado
         } catch (error) {
           console.error("Erro ao buscar cursos:", error);

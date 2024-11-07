@@ -311,7 +311,7 @@ app.post('/api/upload', async (req, res) => {
 
   try {
     await image.mv(uploadPath);
-    const imageUrl = `http://10.0.2.2:3000/uploads/${fileName}`;
+    const imageUrl = `http://4.228.217.151:3000/uploads/${fileName}`;
     res.status(200).json({ imageUrl });
   } catch (error) {
     console.error('Erro ao salvar imagem:', error);

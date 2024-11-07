@@ -50,7 +50,7 @@ const UserDetailScreen = () => {
     return age;
   };
 
-  const handleSave = async () => {
+  const handleSave = async () => { 
     const formattedBirthDate = formatDateForDatabase(birthDate);
     const age = calculateAge(formattedBirthDate);
 
@@ -61,7 +61,7 @@ const UserDetailScreen = () => {
     }
 
     try {
-        const response = await axios.put(`http://10.0.2.2:3000/api/usuario/${user.id_user}`, {
+        const response = await axios.put(`http://4.228.217.151 :3000/api/usuario/${user.id_user}`, {
             nome_user: name,
             nascimento_user: formattedBirthDate,
             email_user: email,
