@@ -39,10 +39,10 @@ app.get('/api/test', (req, res) => {
 
 // Configuração do banco de dados
 const dbConfig = {
-  host: 'localhost', // Endereço do servidor MySQL
-  user: 'root', // Usuário do MySQL
-  password: 'devmysql', // Senha do usuário
-  database: 'esina' // Nome do banco de dados
+  host: '4.228.217.151', // ou o IP do seu servidor MySQL
+  user: 'devmysql',
+  password: 'tecmysql',
+  database: 'tcc2023'
 };
 
 // Função para buscar cidade e estado pelo CEP

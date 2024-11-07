@@ -88,7 +88,7 @@ function CourseHeader({ course, onEditPress, toggleCourseStatus }) {
           style={styles.iconButton}
         >
           <Ionicons 
-            name={course.status_curso === 0 ? "eye-off-outline" : "eye-outline"} 
+            name={course.status_curso === 1 ? "eye-outline" : "eye-off-outline"} 
             size={24} 
             color={colors.darkred} 
           />
@@ -141,21 +141,23 @@ export default function CourseScreen() {
         const response = await axios.post('http://10.0.2.2:3000/api/cursos/buscar', { nome: courseName });
         
         if (response.data) {
+          // Pega o status do banco
           const statusFromDB = Number(response.data.status_curso);
+          console.log('Status do curso carregado do DB:', statusFromDB);
+          
+          // Pega o status da navegação, se existir
+          const courseFromNav = route.params?.course;
+          const statusFromNav = courseFromNav ? Number(courseFromNav.status_curso) : null;
+          console.log('Status da navegação:', statusFromNav);
+
+          // Usa o status da navegação se disponível, senão usa o do banco
+          const finalStatus = statusFromNav !== null ? statusFromNav : statusFromDB;
+          console.log('Status final escolhido:', finalStatus);
+          
           const formattedCourse = {
+            ...response.data,
             id_curso: response.data.id,
-            nome: response.data.nome,
-            imagem: response.data.imagem,
-            dataInicio: response.data.dataInicio,
-            dataFim: response.data.dataFim,
-            duracao: response.data.duracao,
-            preco: response.data.preco,
-            descricao: response.data.descricao,
-            programacao: response.data.programacao,
-            requisitos: response.data.requisitos,
-            perfilProfissional: response.data.perfilProfissional,
-            status_curso: statusFromDB,
-            topico_curso: response.data.topico_curso
+            status_curso: finalStatus // Usa o status final decidido
           };
 
           setCourse(formattedCourse);
@@ -173,8 +175,19 @@ export default function CourseScreen() {
       }
     };
 
+    const courseFromNavigation = route.params?.course;
+    if (courseFromNavigation) {
+      console.log('Status do curso da navegação:', courseFromNavigation.status_curso);
+      setCourse(courseFromNavigation);
+      setEditedCourse({
+        ...courseFromNavigation,
+        dataInicio: formatDateToDisplay(courseFromNavigation.dataInicio),
+        dataFim: formatDateToDisplay(courseFromNavigation.dataFim)
+      });
+    }
+
     fetchCourseDetails();
-  }, [courseName]);
+  }, [courseName, route.params?.course]);
 
   useEffect(() => {
     if (course) {

@@ -31,18 +31,18 @@ const CourseListScreen = () => {
     navigation.navigate('EDITARCURSOADMIN', {
       courseName: course.nome_curso,
       course: {
-        id: course.id_curso,
+        id_curso: course.id_curso,
         nome: course.nome_curso,
-        descricao: course.descricao_curso,
-        duracao: course.horas_curso,
+        imagem: course.imagem_curso,
         dataInicio: course.dataInicio_curso,
         dataFim: course.dataFim_curso,
+        duracao: course.horas_curso,
         preco: course.statusPag_curso,
-        requisitos: course.requisitos_curso,
+        descricao: course.descricao_curso,
         programacao: course.programacao_curso,
+        requisitos: course.requisitos_curso,
         perfilProfissional: course.perfil_curso,
         topico_curso: course.topico_curso,
-        imagem: course.imagem_curso,
         status_curso: Number(course.status_curso)
       }
     });
@@ -77,7 +77,7 @@ const CourseListScreen = () => {
                 key={course.id_curso} 
                 style={[
                   styles.courseItem,
-                  course.status_curso === 0 && styles.inactiveCourseItem
+                  Number(course.status_curso) === 0 && styles.inactiveCourseItem
                 ]} 
                 onPress={() => handleCoursePress(course)}
                 activeOpacity={0.7} // Adiciona feedback visual ao toque

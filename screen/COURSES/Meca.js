@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, StatusBar, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, StatusBar, Image, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { colors } from "../../utils/colors";
 import { fonts } from "../../utils/fonts";
@@ -17,8 +17,19 @@ const App = () => {
       try {
         console.log('Iniciando busca de cursos...');
         const response = await axios.get('http://10.0.2.2:3000/api/cursos/topico/Mecatrônica');
-        console.log('Resposta da API:', response.data);
-        setCursos(response.data);
+        
+        // Converte o status_curso para número em todos os cursos
+        const cursosFormatados = response.data.map(curso => ({
+          ...curso,
+          status_curso: Number(curso.status_curso)
+        }));
+
+        console.log('Cursos formatados:', cursosFormatados.map(c => ({
+          nome: c.nome,
+          status: c.status_curso
+        })));
+
+        setCursos(cursosFormatados);
       } catch (error) {
         console.error('Erro detalhado:', error.response?.data || error.message);
       } finally {
@@ -30,6 +41,17 @@ const App = () => {
   }, []);
 
   const handleCoursePress = (course) => {
+    console.log('Status do curso clicado:', course.status_curso);
+    
+    // Converte para número e verifica
+    if (Number(course.status_curso) === 0) {
+      Alert.alert(
+        "Curso Indisponível",
+        "Este curso está temporariamente indisponível."
+      );
+      return;
+    }
+
     navigation.navigate('COURSEDETAILS', { 
       courseName: course.nome,
       course: {
@@ -45,7 +67,7 @@ const App = () => {
         perfilProfissional: course.perfilProfissional,
         topico: course.topico,
         imagem: course.imagem,
-        status: course.status
+        status_curso: course.status_curso
       }
     });
   };
@@ -80,12 +102,40 @@ const App = () => {
               <ActivityIndicator size="large" color="#FFD700" />
             ) : (
               cursos.map((course) => (
-                <TouchableOpacity key={course.id} style={styles.courseItem} onPress={() => handleCoursePress(course)}>
+                <TouchableOpacity 
+                  key={course.id} 
+                  style={[
+                    styles.courseItem,
+                    course.status_curso === 0 && styles.inactiveCourseItem
+                  ]} 
+                  onPress={() => handleCoursePress(course)}
+                  disabled={course.status_curso === 0}
+                >
                   <View style={styles.sideBar3}></View>
-                  <Image source={img1} style={styles.courseImage} />
-                  <View style={styles.courseTextContainer}>
-                    <Text style={styles.courseTitle}>{course.nome}</Text>
-                    <Text style={styles.courseSubtitle}>{truncateDescription(course.descricao)}</Text>
+                  <Image 
+                    source={img1} 
+                    style={[
+                      styles.courseImage,
+                      course.status_curso === 0 && styles.inactiveImage
+                    ]} 
+                  />
+                  <View style={[
+                    styles.courseTextContainer,
+                    course.status_curso === 0 && styles.inactiveContent
+                  ]}>
+                    <Text style={[
+                      styles.courseTitle,
+                      course.status_curso === 0 && styles.inactiveText
+                    ]}>{course.nome}</Text>
+                    <Text style={[
+                      styles.courseSubtitle,
+                      course.status_curso === 0 && styles.inactiveText
+                    ]}>{truncateDescription(course.descricao)}</Text>
+                    {course.status_curso === 0 && (
+                      <Text style={styles.inactiveText}>
+                        Este curso está temporariamente indisponível.
+                      </Text>
+                    )}
                   </View>
                 </TouchableOpacity>
               ))
@@ -198,6 +248,15 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Regular',
     color: "#9B9B9B",
     marginTop: 5,
+  },
+  inactiveImage: {
+    opacity: 0.5,
+  },
+  inactiveContent: {
+    opacity: 0.5,
+  },
+  inactiveText: {
+    color: '#999',
   },
 });
 

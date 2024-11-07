@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react"; // Importa React e hooks
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, ActivityIndicator, Image } from "react-native"; // Importa componentes do React Native
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, ActivityIndicator, Image, Alert } from "react-native"; // Importa componentes do React Native
 import Feather from "react-native-vector-icons/Feather"; // Importa ícones
 import * as Fonts from 'expo-font'; // Importa a biblioteca para carregar fontes
 import img1 from "../assets/senai.png"; // Imagem do curso
 import { useNavigation } from '@react-navigation/native'; // Adicione este import no topo
+import { colors } from "../utils/colors";
+import { fonts } from "../utils/fonts";
 
 // Componente principal
 export default function BuscaScreen() {
@@ -41,11 +43,24 @@ export default function BuscaScreen() {
     filterCourses();
   }, [selectedCategory, searchTerm]);
 
+  // Adicione um novo useEffect para atualizar os cursos periodicamente
+  useEffect(() => {
+    // Atualiza os cursos a cada vez que a tela recebe foco
+    const unsubscribe = navigation.addListener('focus', () => {
+      fetchCourses();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
+
   // Função para buscar cursos da API
   const fetchCourses = async () => {
     try {
       const response = await fetch('http://10.0.2.2:3000/api/cursos'); // Faz a requisição à API
       const data = await response.json(); // Converte a resposta para JSON
+      
+      console.log('Cursos atualizados:', data); // Debug
+      
       setCourses(data); // Atualiza a lista de cursos
       setFilteredCourses(data); // Inicialmente, todos os cursos são filtrados
     } catch (error) { 
@@ -123,6 +138,16 @@ const truncateDescription = (description) => {
 
   // Adicione esta função para lidar com o clique no curso
   const handleCoursePress = (course) => {
+    // Se o curso estiver inativo, não permite a navegação
+    if (course.status_curso === 0) {
+      Alert.alert(
+        "Curso Indisponível",
+        "Este curso está temporariamente indisponível."
+      );
+      return;
+    }
+
+    // Se estiver ativo, permite a navegação
     navigation.navigate('COURSEDETAILS', {
       courseName: course.nome_curso,
       courseId: course.id_curso
@@ -187,15 +212,34 @@ const truncateDescription = (description) => {
             filteredCourses.map(course => (
               <TouchableOpacity 
                 key={course.id_curso} 
-                style={styles.courseItem}
-                onPress={() => handleCoursePress(course)} // Adicione esta linha
+                style={[
+                  styles.courseItem,
+                  course.status_curso === 0 && styles.inactiveCourseItem
+                ]}
+                onPress={() => handleCoursePress(course)}
+                disabled={course.status_curso === 0} // Desabilita o toque quando inativo
               >
-                <Image source={img1} style={styles.courseImage} /> 
-                <View style={styles.courseTextContainer}>
-                  <Text style={styles.courseTitle}>
+                <Image 
+                  source={img1} 
+                  style={[
+                    styles.courseImage,
+                    course.status_curso === 0 && styles.inactiveImage
+                  ]} 
+                />
+                <View style={[
+                  styles.courseTextContainer,
+                  course.status_curso === 0 && styles.inactiveContent
+                ]}>
+                  <Text style={[
+                    styles.courseTitle,
+                    course.status_curso === 0 && styles.inactiveText
+                  ]}>
                     {truncateDescription(course.nome_curso)}
                   </Text> 
-                  <Text style={styles.courseSubtitle}>
+                  <Text style={[
+                    styles.courseSubtitle,
+                    course.status_curso === 0 && styles.inactiveText
+                  ]}>
                     {truncateDescription(course.descricao_curso)}
                   </Text>
                 </View>
@@ -312,5 +356,25 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 20,
     color: '#9B9B9B',
+  },
+  inactiveCourseItem: {
+    opacity: 0.7,
+    backgroundColor: '#f0f0f0',
+  },
+  inactiveImage: {
+    opacity: 0.5,
+  },
+  inactiveContent: {
+    opacity: 0.7,
+  },
+  inactiveText: {
+    color: '#999999',
+  },
+  inactiveLabel: {
+    color: colors.darkred,
+    fontSize: 12,
+    fontStyle: 'italic',
+    marginTop: 5,
+    fontFamily: fonts.Regular,
   },
 });

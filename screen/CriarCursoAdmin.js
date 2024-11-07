@@ -225,7 +225,11 @@ export default function CriarCursosScreen() {
                 errors={errors}
             />
 
-            <ScrollView contentContainerStyle={styles.scrollViewContent}>
+            <ScrollView 
+                showsVerticalScrollIndicator={false}
+                showsHorizontalScrollIndicator={false}
+                style={styles.scrollViewContent}
+            >
                 <TextInput
                     style={[styles.textInputDescription, { borderColor: errors.descricaoCurso ? colors.red : colors.mediumgray }]}
                     placeholder="Escreva a descrição do curso aqui..."
@@ -314,20 +318,17 @@ const styles = StyleSheet.create({
     },
     backButton: {
         marginRight: 10, // Espaço entre o botão de voltar e o ícone
-        marginTop: 30, // Espaço entre o botão de voltar e o topo da tela
+        marginTop: 60, // Espaço entre o botão de voltar e o topo da tela
     },
     headerContainer: {
         flexDirection: 'row',
-        alignItems: 'center ',
+        alignItems: 'center',
         padding: 10,
         backgroundColor: colors.grayligth,
         borderRadius: 10,
         marginBottom: 40,
-        shadowColor: colors.black,
-        shadowOpacity: 0.1,
-        shadowOffset: { width: 0, height: 2 },
-        shadowRadius: 5,
-        elevation: 3,
+        borderWidth: 1,
+        borderColor: colors.black,
         top: 13,
     },
     iconContainer: {
