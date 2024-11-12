@@ -23,10 +23,6 @@
 &nbsp;&nbsp;&nbsp;&nbsp;- **Manuela Magalhães** (Coordenadora Operacional e Operacional Designer)  
 &nbsp;&nbsp;&nbsp;&nbsp;- **Maria Fernanda de Lima** (Operacional Tester e Operacional Designer)  
 
-## Licença
-
-&nbsp;&nbsp;&nbsp;&nbsp;Este projeto é de propriedade do SENAI "Antonio Devisate" e é desenvolvido por Eduardo Esteves Martins e equipe. Todos os direitos reservados.
-
 ## Como Executar o Projeto
 
 1. &nbsp;&nbsp;&nbsp;&nbsp;Clone o repositório:
@@ -52,3 +48,9 @@ Contribuições são bem-vindas! Sinta-se à vontade para enviar pull requests o
 Para mais informações, entre em contato com:
 
 - Eduardo Esteves Martins: duduestevesmartins@gmail.com
+
+## Licensa
+
+Este trabalho está licenciado sob a Licença Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License (CC BY-NC-SA 4.0).
+Veja mais detalhes em: [https://creativecommons.org/licenses/by-nc-sa/4.0/](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+
