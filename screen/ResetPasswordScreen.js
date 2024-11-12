@@ -30,7 +30,7 @@ const RecuperarSenhaScreen = () => {
 
     setLoading(true);
     try {
-      const response = await fetch('http://4.228.217.151:3000/api/recuperar-senha', {
+      const response = await fetch('http://10.90.235.163:3000/api/recuperar-senha', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -76,7 +76,7 @@ const RecuperarSenhaScreen = () => {
 
     setLoading(true);
     try {
-      const response = await fetch('http://4.228.217.151:3000/api/redefinir-senha', {
+      const response = await fetch('http://10.90.235.163:3000/api/redefinir-senha', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

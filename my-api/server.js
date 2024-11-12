@@ -39,10 +39,10 @@ app.get('/api/test', (req, res) => {
 
 // Configuração do banco de dados
 const dbConfig = {
-  host: '4.228.217.151', // ou o IP do seu servidor MySQL
+  host: '10.90.235.163', // ou o IP do seu servidor MySQL
   user: 'devmysql',
-  password: 'tecmysql',
-  database: 'tcc2023'
+  password: 'Ti@80123',
+  database: 'esina'
 };
 
 // Função para buscar cidade e estado pelo CEP
@@ -311,7 +311,7 @@ app.post('/api/upload', async (req, res) => {
 
   try {
     await image.mv(uploadPath);
-    const imageUrl = `http://4.228.217.151:3000/uploads/${fileName}`;
+    const imageUrl = `http://10.90.235.163:3000/uploads/${fileName}`;
     res.status(200).json({ imageUrl });
   } catch (error) {
     console.error('Erro ao salvar imagem:', error);

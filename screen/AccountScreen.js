@@ -40,7 +40,7 @@ export default function ProfileScreen() {
       // Converte o require do avatar para um caminho de string
       const avatarPath = avatar.toString();
       
-      const response = await fetch(`http://4.228.217.151:3000/api/usuario/${userId}/imagem`, {
+      const response = await fetch(`http://10.90.235.163:3000/api/usuario/${userId}/imagem`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -72,7 +72,7 @@ export default function ProfileScreen() {
       try {
         const userId = await AsyncStorage.getItem('userId');
         if (userId) {
-          const response = await fetch(`http://4.228.217.151:3000/api/usuario/${userId}`);
+          const response = await fetch(`http://10.90.235.163:3000/api/usuario/${userId}`);
           if (!response.ok) {
             throw new Error('Erro ao buscar dados do usuário');
           }

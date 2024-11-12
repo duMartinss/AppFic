@@ -138,7 +138,7 @@ export default function CourseScreen() {
       }
 
       try {
-        const response = await axios.post('http://4.228.217.151:3000/api/cursos/buscar', { nome: courseName });
+        const response = await axios.post('http://10.90.235.163:3000/api/cursos/buscar', { nome: courseName });
         
         if (response.data) {
           // Pega o status do banco
@@ -242,7 +242,7 @@ export default function CourseScreen() {
       };
 
       const response = await axios.put(
-        `http://4.228.217.151:3000/api/cursos/editar/${course.id}`,
+        `http://10.90.235.163:3000/api/cursos/editar/${course.id}`,
         formattedCourse
       );
 
@@ -277,7 +277,7 @@ export default function CourseScreen() {
       }
 
       const response = await axios.put(
-        `http://4.228.217.151:3000/api/cursos/editar/${course.id}`,
+        `http://10.90.235.163:3000/api/cursos/editar/${course.id}`,
         {
           nome: editedCourse.nome,
           dataInicio: formatDateForAPI(editedCourse.dataInicio),
@@ -318,7 +318,7 @@ export default function CourseScreen() {
       const currentStatusNumber = Number(currentStatus);
       const newStatus = currentStatusNumber === 0 ? 1 : 0;
 
-      const response = await axios.put(`http://4.228.217.151:3000/api/cursos/status/${courseId}`, {
+      const response = await axios.put(`http://10.90.235.163:3000/api/cursos/status/${courseId}`, {
         status: newStatus
       });
 
