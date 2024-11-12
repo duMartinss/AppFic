@@ -1,14 +1,21 @@
-Copyright [2024] [Eduardo Esteves Martins]
+MIT License
 
-Este trabalho está protegido pela Licença Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License (CC BY-NC-SA 4.0).
+Copyright (c) 2024 Eduardo Martins
 
-Você pode:
-- Compartilhar (copiar, distribuir e transmitir) o material;
-- Adaptar (remixar, transformar e construir a partir do material) para fins NÃO COMERCIAIS.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-Desde que:
-- Atribua adequadamente o trabalho a [Eduardo Esteves Martins], fornecendo um link para a licença e indicando se houve mudanças.
-- Não use o material para fins comerciais.
-- Se você remixar ou criar algo derivado, deve distribuir a obra resultante sob a mesma licença.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-Você pode encontrar mais informações sobre esta licença em: https://creativecommons.org/licenses/by-nc-sa/4.0/
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
