@@ -103,7 +103,7 @@ const SignupScreen = () => {
             const cidade = dataCep.localidade;
             const estado = dataCep.uf;
 
-            const response = await fetch('http://10.90.235.163:3000/api/signup', {
+            const response = await fetch('http://10.0.2.2:3000/api/signup', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

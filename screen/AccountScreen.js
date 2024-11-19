@@ -29,50 +29,12 @@ export default function ProfileScreen() {
     navigation.goBack();
   };
 
-  const handleImagePicker = () => {
-    setShowAvatarModal(true);
-  };
-
-  const handleSelectAvatar = async (avatar) => {
-    try {
-      const userId = await AsyncStorage.getItem('userId');
-      
-      // Converte o require do avatar para um caminho de string
-      const avatarPath = avatar.toString();
-      
-      const response = await fetch(`http://10.90.235.163:3000/api/usuario/${userId}/imagem`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          imagem_user: avatarPath 
-        }),
-      });
-
-      if (response.ok) {
-        setProfileImage(avatarPath);
-        setShowAvatarModal(false);
-        Alert.alert('Sucesso', 'Imagem de perfil atualizada!');
-        
-        // Atualiza o estado do usuário com a nova imagem
-        setUser(prevUser => ({
-          ...prevUser,
-          imagem_user: avatarPath
-        }));
-      }
-    } catch (error) {
-      console.error('Erro ao atualizar avatar:', error);
-      Alert.alert('Erro', 'Não foi possível atualizar a imagem de perfil');
-    }
-  };
-
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const userId = await AsyncStorage.getItem('userId');
         if (userId) {
-          const response = await fetch(`http://10.90.235.163:3000/api/usuario/${userId}`);
+          const response = await fetch(`http://10.0.2.2:3000/api/usuario/${userId}`);
           if (!response.ok) {
             throw new Error('Erro ao buscar dados do usuário');
           }
@@ -98,12 +60,11 @@ export default function ProfileScreen() {
           <Ionicons name="arrow-back-outline" size={30} color="black" />
         </TouchableOpacity>
         
-        <TouchableOpacity onPress={handleImagePicker} style={styles.perfilContainer}>
+        
           <Image
             source={profileImage ? { uri: profileImage } : require('../assets/user.png')}
             style={styles.perfilImage}
           />
-        </TouchableOpacity>
 
         <View style={styles.userInfo}>
           <Text style={styles.label}>Nome</Text>

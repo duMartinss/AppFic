@@ -42,7 +42,7 @@ export default function TrilhaVisualizerScreen() {
         style={styles.backButton}
         onPress={() => navigation.goBack()}
       >
-        <Ionicons name="close" size={30} color="white" />
+        <Ionicons name="close" size={40} color="white" />
       </TouchableOpacity>
 
       <ImageZoom
@@ -58,6 +58,7 @@ export default function TrilhaVisualizerScreen() {
         <Image
           source={getTrilhaImage(trilhaTitle)}
           style={styles.image}
+          resizeMode="contain"
         />
       </ImageZoom>
     </View>
@@ -68,15 +69,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   backButton: {
     position: 'absolute',
-    top: 20,
-    left: 20,
+    top: 50,
+    left: 10,
     zIndex: 1,
   },
   image: {
-    width: windowWidth,
-    height: windowHeight,
+    width: '100%',
+    height: '100%',
   },
 }); 

@@ -61,7 +61,7 @@ const UserDetailScreen = () => {
     }
 
     try {
-        const response = await axios.put(`http://10.90.235.163:3000/api/usuario/${user.id_user}`, {
+        const response = await axios.put(`http://10.0.2.2:3000/api/usuario/${user.id_user}`, {
             nome_user: name,
             nascimento_user: formattedBirthDate,
             email_user: email,

@@ -14,7 +14,7 @@ const UserListScreen = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get('http://10.90.235.163:3000/api/usuario'); // Rota que retorna a lista de usuários
+        const response = await axios.get('http://10.0.2.2:3000/api/usuario'); // Rota que retorna a lista de usuários
         setUsers(response.data); // Armazena os usuários no estado
       } catch (error) {
         console.error("Erro ao buscar usuários:", error);
@@ -41,11 +41,11 @@ const UserListScreen = () => {
       userId,
       currentStatus: actualStatus,
       newStatus,
-      url: `http://10.90.235.163:3000/api/usuario/status/${userId}`
+      url: `http://10.0.2.2:3000/api/usuario/status/${userId}`
     });
 
     try {
-      const response = await axios.put(`http://10.90.235.163:3000/api/usuario/status/${userId}`, {
+      const response = await axios.put(`http://10.0.2.2:3000/api/usuario/status/${userId}`, {
         status: newStatus
       }, {
         headers: {

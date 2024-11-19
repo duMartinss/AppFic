@@ -70,7 +70,7 @@ export default function CourseScreen() {
       }
 
       try {
-        const response = await axios.post('http://10.90.235.163:3000/api/cursos/buscar', { nome: courseName });
+        const response = await axios.post('http://10.0.2.2:3000/api/cursos/buscar', { nome: courseName });
         if (response.data) {
           setCourse(response.data);
           setEditedCourse(response.data);
@@ -88,7 +88,7 @@ export default function CourseScreen() {
 
   const handleSaveEdits = async () => {
     try {
-      const response = await axios.put(`http://10.90.235.163:3000/api/cursos/editar/${course.id}`, editedCourse);
+      const response = await axios.put(`http://10.0.2.2:3000/api/cursos/editar/${course.id}`, editedCourse);
       if (response.data) {
         setCourse(response.data);
         setEditModalVisible(false);
