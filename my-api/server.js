@@ -39,9 +39,9 @@ app.get('/api/test', (req, res) => {
 
 // Configuração do banco de dados
 const dbConfig = {
-  host: '10.90.235.163', // Endereço do servidor MySQL
-  user: 'devmysql', // Usuário do MySQL
-  password: 'Ti@80123 ', // Senha do usuário
+  host: 'localhost', // Endereço do servidor MySQL
+  user: 'root', // Usuário do MySQL
+  password: 'devmysql', // Senha do usuário
   database: 'esina' // Nome do banco de dados
 };
 
