@@ -6,18 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 import { launchImageLibrary } from 'react-native-image-picker';
 import { colors } from "../utils/colors";
 
-const defaultAvatars = [
-  require('../assets/avatars/Avatar1.jpg'),
-  require('../assets/avatars/Avatar2.jpg'),
-  require('../assets/avatars/Avatar3.jpg'),
-  require('../assets/avatars/Avatar4.jpg'),
-  require('../assets/avatars/Avatar5.jpg'),
-  require('../assets/avatars/Avatar6.jpg'),
-  require('../assets/avatars/Avatar7.jpg'),
-  require('../assets/avatars/Avatar8.jpg'),
-  require('../assets/avatars/Avatar9.jpg'),
-  // Adicione mais avatares conforme necessário
-];
+
 
 export default function ProfileScreen() {
   const [user, setUser] = useState(null);
@@ -97,31 +86,7 @@ export default function ProfileScreen() {
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Escolha sua foto de perfil</Text>
-              <TouchableOpacity 
-                onPress={() => setShowAvatarModal(false)}
-                style={styles.closeButton}
-              >
-                <Ionicons name="close" size={24} color={colors.darkred} />
-              </TouchableOpacity>
             </View>
-            
-            <FlatList
-              data={defaultAvatars}
-              numColumns={3}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.avatarItem}
-                  onPress={() => handleSelectAvatar(item)}
-                >
-                  <Image
-                    source={item}
-                    style={styles.avatarImage}
-                  />
-                </TouchableOpacity>
-              )}
-              contentContainerStyle={styles.avatarGrid}
-            />
           </View>
         </View>
       </Modal>
