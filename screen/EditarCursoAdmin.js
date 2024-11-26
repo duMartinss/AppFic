@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { colors } from "../utils/colors";
 import { fonts } from "../utils/fonts";
+import defaultCourseImage from '../assets/logoEsina.png'; // Ajuste o caminho conforme necessário
 
 function CourseHeader({ course, onEditPress, toggleCourseStatus }) {
   const navigation = useNavigation();
@@ -37,11 +38,8 @@ function CourseHeader({ course, onEditPress, toggleCourseStatus }) {
         <Ionicons name="arrow-back-outline" size={30} color="black" />
       </TouchableOpacity>
       <Image 
-        source={{ uri: course.imagem }} 
-        style={[
-          styles.courseImage,
-          course.status_curso === 0 && styles.inactiveImage
-        ]} 
+        source={course.imagem ? { uri: course.imagem } : defaultCourseImage} // Usar imagem padrão se não houver imagem do curso
+        style={styles.courseImage} 
       />
       <View style={[
         styles.infoContainer,

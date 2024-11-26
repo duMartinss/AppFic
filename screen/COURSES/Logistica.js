@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, StatusBar, Image, TouchableOpacity,
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { colors } from "../../utils/colors";
 import { fonts } from "../../utils/fonts";
-import img1 from "../../assets/senai.png";
+import img1 from "../../assets/Logistic.png";
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 

@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, StatusBar, Image, TouchableOpacity,
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { colors } from "../../utils/colors";
 import { fonts } from "../../utils/fonts";
-import img1 from "../../assets/senai.png";
+import img1 from "../../assets/Foods.png";
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 
@@ -30,6 +30,7 @@ const App = () => {
   }, []);
 
   const handleCoursePress = (course) => {
+    const courseImage = course.imagem ? { uri: course.imagem } : img1;
     navigation.navigate('COURSEDETAILS', { 
       courseName: course.nome,
       course: {
@@ -44,7 +45,7 @@ const App = () => {
         programacao: course.programacao,
         perfilProfissional: course.perfilProfissional,
         topico: course.topico,
-        imagem: course.imagem,
+        image: courseImage,  // Passa a imagem para a próxima tela
         status: course.status
       }
     });
@@ -81,7 +82,10 @@ const App = () => {
             cursos.map(course => (
               <TouchableOpacity key={course.id} style={styles.courseItem} onPress={() => handleCoursePress(course)}>
                 <View style={styles.sideBar3}></View>
-                <Image source={img1} style={styles.courseImage} />
+                <Image 
+                  source={course.imagem ? { uri: course.imagem } : img1}  // Define a imagem do curso
+                  style={styles.courseImage} 
+                />
                 <View style={styles.courseTextContainer}>
                   <Text style={styles.courseTitle}>{course.nome}</Text>
                   <Text style={styles.courseSubtitle}>{truncateDescription(course.descricao)}</Text>
@@ -94,7 +98,6 @@ const App = () => {
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -161,8 +164,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontFamily: fonts.SemiBold
   },
-  
-
   courseItem: {
     flexDirection: "row",
     alignItems: "center",
@@ -173,8 +174,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
   },
-
-
   courseImage: {
     width: 100,
     height: 100,

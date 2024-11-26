@@ -4,10 +4,13 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import { colors } from "../utils/colors";
 import { fonts } from "../utils/fonts";
-import { useNavigation, useRoute } from '@react-navigation/native'; 
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 function CourseHeader({ course, onEditPress }) {
   const navigation = useNavigation();
+  const image = course.imagem;  // Acessando a imagem passada
+
+  console.log('Imagem recebida:', image);  // Verifique se a imagem foi passada corretamente
 
   const formatDate = (dateString) => {
     if (!dateString) return '';
@@ -29,12 +32,22 @@ function CourseHeader({ course, onEditPress }) {
       <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
         <Ionicons name="arrow-back-outline" size={30} color="black" />
       </TouchableOpacity>
-      <Image source={{ uri: course.imagem }} style={styles.courseImage} />
+      {/* Exibir a imagem do curso */}
+      <Image
+  source={
+    image
+      ? image.startsWith('http') // Verifica se a string é uma URL
+        ? { uri: image }
+        : require('../assets/logoEsina.png')  // Caso o `image` não seja uma URL válida, carregamos uma imagem local
+      : require('../assets/logoEsina.png')  // Caso a imagem seja null ou undefined
+  }
+  style={styles.courseImage}
+/>
       <View style={styles.infoContainer}>
         <Text style={styles.courseTitle}>{course.nome}</Text>
         <View style={styles.datesContainer}>
           <View style={styles.dateItem}>
-            <Text style={styles.dateLabel}>Início</Text>
+            <Text style={styles.dateLabel}>Início</Text>  
             <Text style={styles.dateValue}>{formatDate(course.dataInicio)}</Text>
             <Text style={styles.hours}>{formatHours(course.duracao)}h</Text>
           </View>
@@ -68,12 +81,13 @@ export default function CourseScreen() {
         setLoading(false);
         return;
       }
-
+  
       try {
         const response = await axios.post('http://10.0.2.2:3000/api/cursos/buscar', { nome: courseName });
         if (response.data) {
           setCourse(response.data);
           setEditedCourse(response.data);
+          console.log('Dados do curso:', response.data); // Verifique a estrutura dos dados aqui
         }
       } catch (error) {
         console.error('Erro na requisição:', error);
@@ -82,7 +96,7 @@ export default function CourseScreen() {
         setLoading(false);
       }
     };
-
+  
     fetchCourseDetails();
   }, [courseName]);
 
@@ -122,6 +136,7 @@ export default function CourseScreen() {
       <CourseHeader course={course} onEditPress={() => setEditModalVisible(true)} />
       <ScrollView contentContainerStyle={styles.scrollViewContent} showsVerticalScrollIndicator={false}>
         <Text style={styles.courseDescription}>{course.descricao}</Text>
+
         {/* Conteúdo Expandível */}
         {/* Programação */}
         <TouchableOpacity style={styles.sectionButton} onPress={() => setProgramacaoOpen(!isProgramacaoOpen)}>
@@ -151,6 +166,33 @@ export default function CourseScreen() {
           </TouchableOpacity>
         )}
       </ScrollView>
+
+      {/* Modal de Edição */}
+      <Modal visible={isEditModalVisible} animationType="slide" transparent={true}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Editar Curso</Text>
+            <TextInput
+              style={styles.input}
+              value={editedCourse.nome}
+              onChangeText={(text) => setEditedCourse({ ...editedCourse, nome: text })}
+              placeholder="Nome do Curso"
+            />
+            <TextInput
+              style={styles.input}
+              value={editedCourse.descricao}
+              onChangeText={(text) => setEditedCourse({ ...editedCourse, descricao: text })}
+              placeholder="Descrição"
+            />
+            <TouchableOpacity onPress={handleSaveEdits} style={styles.saveButton}>
+              <Text style={styles.saveButtonText}>Salvar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setEditModalVisible(false)} style={styles.cancelButton}>
+              <Text style={styles.cancelButtonText}>Cancelar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -174,11 +216,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 5,
     elevation: 3,
-  },
-  courseImage: {
-    width: 135,
-    height: 100,
-    borderRadius: 10,
   },
   infoContainer: {
     flex: 1,
@@ -343,6 +380,17 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  courseImage: {
+    width: 100, // Ajuste o tamanho conforme necessário
+    height: 100,
+    borderRadius: 10,
+    marginRight: 10, // Espaçamento entre a imagem e as informações
+    resizeMode: 'cover',
+  },
+  infoContainer: {
+    flex: 1,
+    marginLeft: 10, // Espaçamento à esquerda das informações
   },
 });
 

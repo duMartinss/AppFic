@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, StatusBar, Image, TouchableOpacity,
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { colors } from "../../utils/colors";
 import { fonts } from "../../utils/fonts";
-import img1 from "../../assets/senai.png";
+import img1 from "../../assets/Management.png";
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 
@@ -179,8 +179,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontFamily: fonts.SemiBold
   },
-  
-
   courseItem: {
     flexDirection: "row",
     alignItems: "center",
@@ -191,8 +189,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
   },
-
-
   courseImage: {
     width: 100,
     height: 100,

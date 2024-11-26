@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, StatusBar, Image, TouchableOpacity,
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { colors } from "../../utils/colors";
 import { fonts } from "../../utils/fonts";
-import img1 from "../../assets/senai.png";
+import img1 from '../../assets/Refrigeracao.jpg'
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 
@@ -31,6 +31,7 @@ const App = () => {
   }, []);
 
   const handleCoursePress = (course) => {
+    const courseImage = course.imagem ? { uri: course.imagem } : img1;
     navigation.navigate('COURSEDETAILS', { 
       courseName: course.nome,
       course: {
@@ -45,7 +46,7 @@ const App = () => {
         programacao: course.programacao,
         perfilProfissional: course.perfilProfissional,
         topico: course.topico_curso,
-        imagem: course.imagem,
+        image: courseImage,  // Passa a imagem para a próxima tela
         status: course.status
       }
     });
@@ -96,7 +97,7 @@ const App = () => {
               >
                 <View style={styles.sideBar3} />
                 <Image 
-                  source={curso.imagem ? { uri: curso.imagem } : img1} 
+                  source={curso.imagem ? { uri: curso.imagem } : img1}  // Define a imagem do curso
                   style={styles.courseImage} 
                 />
                 <View style={styles.courseTextContainer}>
@@ -198,7 +199,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderWidth: 1,
     borderColor: '#B0B0B0',
-    resizeMode: 'contain',
+    resizeMode: 'cover',
   },
   courseTextContainer: {
     marginLeft: 20,

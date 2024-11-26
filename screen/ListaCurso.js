@@ -4,9 +4,37 @@ import { useFocusEffect } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { colors } from "../utils/colors";
 import { fonts } from "../utils/fonts";
-import img1 from "../assets/senai.png"; // Imagem padrão para os cursos
 import { useNavigation } from "@react-navigation/native";
 import axios from 'axios';
+
+// Imagem padrão caso o curso não tenha uma imagem específica
+import img1 from "../assets/logoEsina.png"; 
+
+// Defina o mapeamento das imagens de cursos
+const courseImages = {
+  "Refrigeração e Climatização": require("../assets/Refrigeracao.jpg"),
+
+  "Tecnologia": require("../assets/TI.png"),
+
+  "Administração e Gestão": require("../assets/Management.png"),
+
+  "Alimentos e Bebidas": require("../assets/Foods.png"),
+
+  "Meio Ambiente": require("../assets/Environmnetal.png"),
+
+  "Automotiva": require("../assets/Automotive.png"),
+
+  "Construção Civil": require("../assets/Construction.png"),
+
+  "Design de Moda": require("../assets/Fashion.png"),
+
+  "Fabricação Mecânica": require("../assets/Industry.png"),
+
+  "Logística e Transporte": require("../assets/Logistic.png"),
+
+  "Mecatrônica": require("../assets/Mechatronic.png"),
+  
+};
 
 const CourseListScreen = () => {
   const [courses, setCourses] = useState([]); // Estado para armazenar os cursos
@@ -16,14 +44,15 @@ const CourseListScreen = () => {
     React.useCallback(() => {
       const fetchCourses = async () => {
         try {
-          const response = await axios.get('http://10.0.2.2:3000/api/cursos'); // Rota que retorna a lista de cursos
-          setCourses(response.data); // Armazena os cursos no estado
+          const response = await axios.get('http://10.0.2.2:3000/api/cursos');
+          console.log(response.data); // Verifique a estrutura dos dados
+          setCourses(response.data);
         } catch (error) {
           console.error("Erro ao buscar cursos:", error);
         }
       };
-
-      fetchCourses(); // Chama a função para buscar cursos
+  
+      fetchCourses();
     }, [])
   );
 
@@ -42,7 +71,7 @@ const CourseListScreen = () => {
         programacao: course.programacao_curso,
         requisitos: course.requisitos_curso,
         perfilProfissional: course.perfil_curso,
-        topico_curso: course.topico_curso,
+        categoria: course.categoria,
         status_curso: Number(course.status_curso)
       }
     });
@@ -70,27 +99,37 @@ const CourseListScreen = () => {
             <Text style={styles.title}>Lista de Cursos</Text>
             <Ionicons name="reader-outline" size={50} color="#AD0000" style={styles.icon} />
           </View>
-          {/* Lista de Cursos */}
-          {courses.length > 0 ? (
-            courses.map((course) => (
-              <TouchableOpacity 
-                key={course.id_curso} 
-                style={[
-                  styles.courseItem,
-                  Number(course.status_curso) === 0 && styles.inactiveCourseItem
-                ]} 
-                onPress={() => handleCoursePress(course)}
-                activeOpacity={0.7} // Adiciona feedback visual ao toque
-              >
-                <Image source={img1} style={styles.courseImage} />
-                <View style={styles.courseTextContainer}>
-                  <Text style={styles.courseName}>{course.nome_curso}</Text>
-                  <Text style={styles.courseDescription}>
-                    {truncateDescription(course.descricao_curso)}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            ))
+           {/* Lista de Cursos */}
+           {courses.length > 0 ? (
+            courses.map((course) => {
+              // Usa a categoria do curso como o "tópico"
+              const normalizedCategory = course.categoria || ''; // Protege contra undefined
+              console.log("Categoria do curso:", course.categoria); // Verifique a categoria real
+              console.log("Categoria normalizada:", normalizedCategory); // Verifique a categoria normalizada
+
+              // Verifica se a categoria do curso corresponde a uma imagem específica
+              const courseImage = courseImages[normalizedCategory] || img1; // Usa a imagem padrão se não houver imagem associada
+
+              return (
+                <TouchableOpacity 
+                  key={course.id_curso} 
+                  style={[
+                    styles.courseItem,
+                    Number(course.status_curso) === 0 && styles.inactiveCourseItem
+                  ]}
+                  onPress={() => handleCoursePress(course)}
+                  activeOpacity={0.7} // Feedback visual ao toque
+                >
+                  <Image source={courseImage} style={styles.courseImage} />
+                  <View style={styles.courseTextContainer}>
+                    <Text style={styles.courseName}>{course.nome_curso}</Text>
+                    <Text style={styles.courseDescription}>
+                      {truncateDescription(course.descricao_curso)}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              );
+            })
           ) : (
             <Text style={styles.noCourses}>Nenhum curso encontrado.</Text>
           )}
@@ -192,25 +231,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.blackgray,
   },
-  courseInfoContainer: {
-    flexDirection: 'row',
-    marginTop: 8,
-    gap: 15,
-  },
-  courseInfo: {
-    fontSize: 14,
-    color: colors.darkred,
-  },
   inactiveCourseItem: {
-    opacity: 0.5,
-  },
-  inactiveImage: {
-    opacity: 0.5,
-  },
-  inactiveContent: {
-    opacity: 0.5,
-  },
-  inactiveText: {
     opacity: 0.5,
   },
 });

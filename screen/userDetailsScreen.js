@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Modal, TextInput, Alert } from 'react-native';
 import { useRoute } from '@react-navigation/native';
-import img1 from "../assets/senai.png"; 
+import userImage from '../assets/user.png'
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
 import axios from 'axios';
@@ -17,7 +17,7 @@ const UserDetailScreen = () => {
   const [birthDate, setBirthDate] = useState('');
   const [email, setEmail] = useState(user.email_user);
   const [phone, setPhone] = useState(user.telefone_user);
-  const [profileImage, setProfileImage] = useState(img1);
+  const [profileImage, setProfileImage] = useState(userImage);
 
   const handleGoBack = () => {
     navigation.goBack();
@@ -84,19 +84,6 @@ const UserDetailScreen = () => {
     }
   };
 
-  const handleChoosePhoto = () => {
-    launchImageLibrary({ mediaType: 'photo' }, (response) => {
-      if (response.didCancel) {
-        console.log('User  cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else {
-        const source = { uri: response.assets[0].uri };
-        setProfileImage(source);
-      }
-    });
-  };
-
   useEffect(() => {
     setName(user.nome_user);
     setBirthDate(formatDateForDisplay(user.nascimento_user)); // Formate aqui
@@ -112,9 +99,8 @@ const UserDetailScreen = () => {
 
       <View style={styles.content}>
         <View style={styles.perfilContainer}>
-          <TouchableOpacity onPress={handleChoosePhoto}>
+
             <Image source={profileImage} style={styles.perfilImage} />
-          </TouchableOpacity>
         </View>
 
         <View style={styles.userInfo}>
